@@ -1,0 +1,60 @@
+body {
+    background: url('/images/bg_details.jpg') no-repeat center center fixed;
+    background-size: cover;
+}
+
+.container {
+    display: block;
+    padding: 5px;
+}
+
+.left {
+    width: 50%;
+    border-left: 1px;
+}
+
+.right {
+    width: 50%;
+    float: right;
+}
+
+#recipePhoto {
+    border-radius: 30px;
+    width: 1500px;
+    height: 450px;
+}
+
+#ingredients {
+    background: rgb(168, 168, 134);
+    margin: 50px;
+    margin-left: 40%;
+    border-radius: 30px;
+    text-align: center;
+    padding: 5px;
+    font-family:Georgia, 'Times New Roman', Times, serif;
+    font-size: 22px;
+    width: 350px;
+}
+
+#instructions {
+    background: rgb(168, 168, 134);
+    margin: 50px;
+    border-radius: 20px;
+    text-align: justify;
+    padding: 5px;
+    font-family:Georgia, 'Times New Roman', Times, serif;
+    font-size: 22px;
+    width: 800px;
+}
+
+#ingredients hr {
+    margin: 2px 0;
+    border: none;            /* убираем стандартный стиль */
+    border-top: 1px solid #000000;  /* тонкая линия */
+}
+
+#instructions hr {
+    margin: 5px 0;
+    border: none;            /* убираем стандартный стиль */
+    border-top: 1px solid #000000;  /* тонкая линия */
+}

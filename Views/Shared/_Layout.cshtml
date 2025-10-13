@@ -1,0 +1,71 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"]</title>
+
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/project.styles.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+
+    @RenderSection("Styles", required: false)
+</head>
+<body>
+
+    <header class="top-navbar">
+    <nav>
+        <ul class="menu">
+        <li class="menu-item">
+                <a href="/">Титульна сторінка</a>
+            </li>
+
+        <li class="menu-item">
+                <a href="/Home/main_page">Головна сторінка</a>
+            </li>
+
+        <li class="menu-item">
+                <a href="/Home/addRecipe">Додати власний рецепт</a>
+            </li>
+
+        <li class="menu-item">
+                <a href="/Acc/Register">Створення власної кулінарної книги</a>
+            </li>
+
+        <li class="menu-item">
+                <a href="/Home/saved">Мої збережені рецепти</a>
+            </li>
+@*             
+            <li class="menu-item">
+                Титульна сторінка
+                <ul class="submenu">
+                    <li><a href="/Category1/Sub1">Подкатегория 1.1</a></li>
+                    <li><a href="/Category1/Sub2">Подкатегория 1.2</a></li>
+                    <li><a href="/Category1/Sub3">Подкатегория 1.3</a></li>
+                </ul>
+            </li>
+            <li class="menu-item">
+                Головна сторінка
+                <ul class="submenu">
+                    <li><a href="/Category2/Sub1">Подкатегория 2.1</a></li>
+                    <li><a href="/Category2/Sub2">Подкатегория 2.2</a></li>
+                </ul>
+            </li> *@
+            
+        </ul>
+    </nav>
+</header>
+
+    <div class="container">
+        <main role="main" class="pb-3">
+            @RenderBody()
+        </main>
+    </div>
+
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
+
+    @RenderSection("Scripts", required: false)
+</body>
+</html>

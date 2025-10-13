@@ -1,0 +1,90 @@
+@model project.Models.Recipe
+
+@{
+    var commentsArr = ViewBag.Comments as Comments[];
+}
+
+
+@section Scripts {
+    <script src="~/js/comments.js"></script>
+}
+
+@section Styles {
+    <link rel="stylesheet" href="~/css/details.css"/>
+}
+
+<div class="container">
+    <div class="right">
+        <div id="ingredients">
+            <h4>Інгредієнти</h4>
+            <ul>
+                @foreach (var ing in Model.IngredientsArr)
+                {
+                    @ing
+                    <hr />
+                }
+            </ul>
+        </div>
+    </div>
+
+    <div class="left">
+    <h2>@Model.recipe_name</h2>
+    <p><strong>Категорія:</strong>@Model.Category?.category_name</p>
+        @if (!string.IsNullOrEmpty(Model.Photo))
+        {
+            <img id="recipePhoto" src="@Model.Photo" alt="Фото рецепта" class="img-fluid mt-3" />
+        }
+
+        <p><strong>Час приготування:</strong> @Model.time_cooking</p>
+
+        @if (User?.Identity?.IsAuthenticated == true)
+        {
+            <form asp-controller="Saved" asp-action="Save" method="post">
+                <input type="hidden" name="recipeId" value="@Model.recipeID" />
+                <button type="submit">Сохранить рецепт</button>
+            </form>
+        }
+
+        <div id="instructions">
+            <h4>Інструкції приготування</h4>
+            <ul>
+                @foreach (var ing in Model.InstructionsArr)
+                {
+                    <li>@ing</li>
+                    <hr />
+                }
+            </ul>
+        </div>
+    </div>
+</div>
+
+
+<h3>Коментарі</h3>
+<div id="comments">
+    @if (commentsArr != null)
+    {
+        foreach (var c in commentsArr)
+        {
+            @await Html.PartialAsync("~/Views/Comments/Comments.cshtml", c)
+        }
+    }
+</div>
+
+@if (User?.Identity?.IsAuthenticated == true)
+{
+    @* <form id="commentForm" method="post">
+        <input type="hidden" name="recipeID" value="@Model.recipeID" />
+        <input type="hidden" name="parentID" id="parentId" value="0" />
+        <textarea name="text" id="comment_text" class="form-control"></textarea>
+        <button type="submit">Надіслати</button>
+    </form> *@
+    <form id="commentForm">
+    <input type="hidden" id="recipeId" name="recipeID" value="@Model.recipeID" />
+    <textarea id="comment_text" name="text" required></textarea>
+    <button type="submit">Додати</button>
+</form>
+}
+else
+{
+    <p><a href="/Acc/Login">Увійдіть</a> щоб залишити коментар</p>
+}

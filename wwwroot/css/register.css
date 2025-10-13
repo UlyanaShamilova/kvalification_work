@@ -1,0 +1,192 @@
+*{
+    margin: 0px;
+    padding: 0px;
+}
+
+html, body {
+    margin: 0;
+    padding: 0;
+    min-height: 100%;
+    overflow: hidden;
+}
+
+body {
+    min-height: 100vh;
+    background: linear-gradient(to left, #b4b4b4, #d5bfb5) fixed;
+    background-size: cover;
+}
+
+form {
+    font-family:'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
+    background-color: rgba(54, 54, 54, 0.76);
+    width: 650px;
+    height: 450px;
+    border-radius: 40px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 20px;
+}
+
+form input{
+    height: 50px;
+    margin-block: 10px;
+}
+
+form button{
+    width: 350px;
+    height: 50px;
+    margin: 20px auto 0 auto;
+    display: block;
+}
+
+form a{
+    width: 50px;
+    margin: 20px auto 0 auto;
+    display: block;
+}
+
+.area {
+    min-height: 100vh;
+    width: 100%;
+    position: relative;
+    overflow: hidden;
+    display: flex; 
+    justify-content: center; 
+    align-items: center;  
+}
+
+.context {
+    position: relative;
+    z-index: 10; /* форма поверх анимации */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100vh; /* займёт весь экран */
+    font-family:'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
+}
+
+.context h1{
+    text-align: center;
+    color: #fff;
+    font-size: 50px;
+}
+   
+.circles{
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    pointer-events: none; /* проходит через фон*/
+}
+
+.circles li {
+    position: absolute;
+    display: block;
+    bottom: -150px;
+    background: rgba(255, 255, 255, 0.2); /* полупрозрачный белый квадрат */
+    animation: animate 25s linear infinite;
+    list-style: none;
+}
+
+.circles li:nth-child(1){
+    left: 25%;
+    width: 80px;
+    height: 80px;
+    background: rgba(255, 255, 255, 0.3);
+    animation-delay: 0s;
+}
+
+.circles li:nth-child(2){
+    left: 10%;
+    width: 20px;
+    height: 20px;
+    background: rgba(255, 255, 255, 0.4);
+    animation-delay: 2s;
+    animation-duration: 12s;
+}
+
+.circles li:nth-child(3){
+    left: 70%;
+    width: 20px;
+    height: 20px;
+    background: rgba(255, 255, 255, 0.2);
+    animation-delay: 4s;
+}
+
+.circles li:nth-child(4){
+    left: 40%;
+    width: 60px;
+    height: 60px;
+    animation-delay: 0s;
+    animation-duration: 18s;
+}
+
+.circles li:nth-child(5){
+    left: 65%;
+    width: 20px;
+    height: 20px;
+    animation-delay: 0s;
+}
+
+.circles li:nth-child(6){
+    left: 75%;
+    width: 110px;
+    height: 110px;
+    animation-delay: 3s;
+}
+
+.circles li:nth-child(7){
+    left: 35%;
+    width: 150px;
+    height: 150px;
+    animation-delay: 7s;
+}
+
+.circles li:nth-child(8){
+    left: 50%;
+    width: 25px;
+    height: 25px;
+    animation-delay: 15s;
+    animation-duration: 45s;
+}
+
+.circles li:nth-child(9){
+    left: 20%;
+    width: 15px;
+    height: 15px;
+    animation-delay: 2s;
+    animation-duration: 35s;
+}
+
+.circles li:nth-child(10){
+    left: 85%;
+    width: 150px;
+    height: 150px;
+    animation-delay: 0s;
+    animation-duration: 11s;
+}
+
+@keyframes animate {
+
+    0%{
+        transform: translateY(0) rotate(0deg);
+        opacity: 1;
+        border-radius: 0;
+    }
+
+    100%{
+        transform: translateY(-1000px) rotate(720deg);
+        opacity: 0;
+        border-radius: 50%;
+    }
+
+}
+
+.top-navbar, nav {
+    position: relative;
+    z-index: 10; /* выше, чем фон */
+}

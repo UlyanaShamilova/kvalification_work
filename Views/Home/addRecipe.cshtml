@@ -1,0 +1,47 @@
+@model AddRecipeModel
+
+@section Styles {
+    <link rel="stylesheet" href="~/css/addRecipe.css"/>
+}
+
+<h1>Додати рецепт</h1>
+
+<form asp-action="AddRecipe" method="post" enctype="multipart/form-data">
+    <div class="left">
+        <div>
+            <label>Назва:</label>
+            <input id="name_input" asp-for="RecipeName" />
+        </div>
+
+        <div>
+            <label for="categoryID">Категорія:</label>
+            <select id="categoryID" name="categoryID">
+                @if (Model.Categories != null && Model.Categories.Any())
+                {
+                    foreach (var category in Model.Categories)
+                    {
+                        <option value="@category.categoryID">@category.category_name</option>
+                    }
+                }
+            </select>
+        </div>
+
+        <div>
+            <label>Фото:</label>
+            <input type="file" asp-for="Photo" />
+        </div>
+        
+        <button type="submit">Додати</button>
+    </div>
+
+    <div class="right">
+        <div>
+            <label>Інгредієнти:</label>
+            <textarea asp-for="Ingredients"></textarea>
+        </div>
+        <div>
+            <label>Інструкція:</label>
+            <textarea asp-for="Instruction"></textarea>
+        </div>
+    </div>
+</form>

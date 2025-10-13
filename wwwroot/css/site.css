@@ -1,0 +1,102 @@
+@media (min-width: 768px) {
+  html {
+    font-size: 16px;
+  }
+}
+
+.btn:focus, .btn:active:focus, .btn-link.nav-link:focus, .form-control:focus, .form-check-input:focus {
+  box-shadow: 0 0 0 0.1rem white, 0 0 0 0.25rem #258cfb;
+}
+
+html {
+  position: relative;
+  min-height: 100vh;
+}
+
+.form-floating > .form-control-plaintext::placeholder, .form-floating > .form-control::placeholder {
+  color: var(--bs-secondary-color);
+  text-align: end;
+}
+
+.form-floating > .form-control-plaintext:focus::placeholder, .form-floating > .form-control:focus::placeholder {
+  text-align: start;
+}
+
+.top-navbar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    background-color: #b1a1a1;
+    color: white;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.3);
+}
+
+.top-navbar .menu {
+    display: flex;
+    justify-content: center;
+    gap: 60px; 
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+.top-navbar .menu-item {
+    position: relative;
+    padding: 15px 20px;
+    cursor: pointer;
+    transition: background 0.3s;
+}
+
+.top-navbar .menu-item a {
+    color: rgb(0, 0, 0);
+    text-decoration: none;
+}
+
+/* Подменю */
+.submenu {
+    max-height: 0; 
+    overflow: hidden;
+    opacity: 0;
+    transform: translateY(-10px);
+    position: absolute;
+    top: 100%;
+    left: 0;
+    background-color: #444;
+    list-style: none;
+    padding: 0;
+    min-width: 180px;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.4);
+    border-radius: 4px;
+    transition: max-height 0.4s ease, opacity 0.4s ease, transform 0.4s ease;
+    z-index: 1001;
+}
+
+.submenu li {
+    padding: 10px 15px;
+}
+
+.submenu li a {
+    color: white;
+    display: block;
+}
+
+/* Плавное появление подменю при hover */
+.menu-item:hover > .submenu {
+    max-height: 500px; /* достаточно для всех подкатегорий */
+    opacity: 1;
+    transform: translateY(0);
+}
+
+/* Hover эффекты пунктов меню */
+.menu-item:hover {
+    background-color: #8a7878;
+}
+
+.submenu li:hover {
+    background-color: #666;
+}
+
+body {
+    padding-top: 80px;
+}

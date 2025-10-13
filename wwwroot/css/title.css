@@ -1,0 +1,87 @@
+#arrow_img {
+    width: 200px;
+    transition: transform 0.8s ease;
+    cursor: pointer;
+}
+
+body {
+    background: url('/images/bg_title.jpg') no-repeat center center fixed;
+    background-size: cover;
+}
+
+.flip {
+    transform: rotateY(180deg);
+}
+
+/* Общий класс перехода */
+body.page-transition {
+    animation: flipTop 1s forwards;
+}
+
+/* Переход сверху вниз (по умолчанию) */
+@keyframes flipTop {
+    0% {
+        transform: rotateX(0deg);
+        transform-origin: top center;
+        opacity: 1;
+    }
+    100% {
+        transform: rotateX(90deg);
+        transform-origin: top center;
+        opacity: 0;
+    }
+}
+
+/* Переход снизу вверх */
+body.page-transition.flip-bottom {
+    animation: flipBottom 1s forwards;
+}
+
+@keyframes flipBottom {
+    0% {
+        transform: rotateX(0deg);
+        transform-origin: bottom center;
+        opacity: 1;
+    }
+    100% {
+        transform: rotateX(-90deg);
+        transform-origin: bottom center;
+        opacity: 0;
+    }
+}
+
+body.transitioning {
+    pointer-events: none;
+}
+
+footer {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  line-height: 60px;
+  font-size: 28px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 800px;
+}
+
+.footer-text{
+  text-align: center;
+}
+
+.text-center{
+  position: relative;
+  top: 50px;
+}
+
+.display-4{
+  line-height: 90px;
+}
+
+.info{
+  font-size: 36px;
+  line-height: 100px;
+  padding-top: 120px;
+}

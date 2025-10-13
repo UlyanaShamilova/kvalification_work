@@ -1,0 +1,113 @@
+@{
+    ViewData["Title"] = "Головна сторінка";
+}
+
+@model project.Models.MainPageViewModel
+@{
+    ViewData["Title"] = "Головна сторінка";
+}
+
+@section Styles {
+    <link rel="stylesheet" href="~/css/main.css"/>
+}
+
+@section Scripts {
+    <script src="~/js/main.js"></script>
+    <script src="~/js/saved.js"></script>
+}
+
+<h2>Що бажаєте приготувати?</h2>
+
+<div class="account-wrapper">
+    @if (User.Identity != null && User.Identity.IsAuthenticated)
+    {
+        <div class="user-info" id="userMenuWrapper">
+            <button id="userMenuBtn" class="acc-btn">
+                <img src="~/images/acc.png" alt="Account" style="width:45px; height:45px;" />
+            </button>
+            <span>@User.Identity.Name</span>
+
+            <div id="userDropdown" class="dropdown-menu">
+                <form asp-controller="Acc" asp-action="Logout" method="post">
+                    <button type="submit" class="dropdown-item">Вийти</button>
+                </form>
+            </div>
+        </div>
+    }
+    else
+    {
+        <div class="login-placeholder">
+            <a asp-controller="Acc" asp-action="Login" class="login-link">Увійти</a>
+        </div>
+    }
+</div>
+
+<form id="searchForm" method="get" class="search-bar">
+    <input type="text" id="searchInput" placeholder="Пошук за назвою чи інгредієнтом" />
+    <button type="button" id="searchBtn"><img id = "searchImg" src="/images/search_img.png" alt=""></button>
+</form>
+
+<div class="category-bar">
+    @foreach (var card in Model.CategoryCards)
+    {
+        <div class="category-link" data-category="@card.Category.category_name">
+            @if (card.Category.Photo != null)
+            {
+                <img src="data:image/jpeg;base64,@Convert.ToBase64String(card.Category.Photo)" alt="@card.Category.category_name" />
+            }
+            
+            <div class="category-title">@card.Category.category_name</div>
+        </div>
+    }
+</div>
+
+<div class="recipe-container">
+    @foreach (var recipe in Model.Recipes)
+    {
+        <a href="@Url.Action("Details", "Home", new { id = recipe.recipeID })" style="text-decoration:none; color:inherit;">
+            @if (!string.IsNullOrEmpty(recipe.Photo))
+            {
+                <div class="photo-class">
+                    <img src="@recipe.Photo" alt="Фото рецепта" />
+                </div>
+            }
+            else
+            {
+                <img src="/images/default.jpg" alt="Без зображення" />
+            }
+
+            <div class="recipe-time">
+                <span>🕒 @recipe.time_cooking</span>
+            </div>
+            <div class="recipe-category">@recipe.Category?.category_name</div>
+            <div class="recipe-name">@recipe.recipe_name</div>
+        </a>
+
+
+            <div class="recipe-ingredients" style="display:none;">
+                @recipe.ingredients
+            </div>
+
+            <button class="save-btn" data-id="@recipe.recipeID" style="background:none; border:none;">
+                <img src="@(recipe.IsSaved ? "/images/filled_star.jpg" : "/images/empty_star.jpg")" 
+                     alt="Сохранить рецепт" style="width:24px; height:24px;" />
+            </button>
+        @* </div> *@
+    }
+</div>
+
+<div id="chatbot" onclick="toggleChat()">
+    <img src="~/images/ai_main.png" alt="">
+</div>
+
+<div id="chat-window">
+    <div class="chat-header">
+        <span>Кулінарний помічник</span>
+        <button id="chat-close" onclick="toggleChat()">×</button>
+    </div>
+    <div id="chat-messages"></div>
+    <div class="chat-input">
+        <input type="text" id="chat-text" placeholder="Яке в тебе питання?" />
+        <button onclick="sendMessage()">→</button>
+    </div>
+</div>

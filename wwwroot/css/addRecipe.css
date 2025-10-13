@@ -1,0 +1,85 @@
+body {
+    background: url('/images/bg_add_recipe.jpg') no-repeat center center fixed;
+    background-size: cover;
+}
+
+form {
+    display: flex;
+}
+
+form div {
+    margin-bottom: 120px;
+    margin-left: 30px;
+}
+
+.left {
+    width: 60%;
+    border-left: 1px;
+}
+
+.right {
+    width: 40%;
+    float: right;
+}
+
+#name_input {
+    width: 280px;
+    border-radius: 5px;
+    background-color: transparent;
+    margin-left: 5px;
+    border: 1px solid #756666;
+}
+
+textarea {
+    width: 250px;
+    background-color: transparent;
+    border-radius: 8px;
+    height: 150px;
+}
+
+#categoryID {
+    width: 200px;
+    text-align: center;
+    padding: 4px 4px;
+    border-radius: 20px;
+    border: 1px solid #756666;
+    background-color: transparent;
+    color: #333;
+    outline: none;
+}
+
+/* при наведении */
+#categoryID:hover {
+    border-color: #b0a77b;
+    box-shadow: 0 0 8px rgba(176, 167, 123, 0.4);
+    cursor: pointer;
+}
+
+select option {
+    background-color: #f7f0e6;
+    color: #333;
+    font-family: Georgia, serif;
+    font-size: 18px;
+    padding: 5px;
+    border-radius: 20px;
+}
+
+button {
+    width: 250px;
+    height: 60px;
+    border-radius: 20px;
+    background-color: #bcc781;
+    align-items: center;
+    margin-left: 30%;
+}
+
+label, input, textarea, button, select {
+    font-family: Georgia, 'Times New Roman', Times, serif;
+    font-size: 25px;
+}
+
+h1 {
+    margin-bottom: 70px;
+    text-align: center;
+    font-family: Georgia, 'Times New Roman', Times, serif;
+}

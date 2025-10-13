@@ -1,0 +1,102 @@
+@model project.Models.SearchModel
+
+@{
+    string queryLower = "";
+    if (!string.IsNullOrEmpty(Model.Query))
+    {
+        queryLower = Model.Query.ToLower();
+    }
+
+    var filteredRecipes = new List<project.Models.Recipe>();
+
+    foreach (var recipe in Model.AllRecipes)
+    {
+        bool matches = false;
+
+        // Поиск по названию
+        if (!string.IsNullOrEmpty(recipe.recipe_name) && recipe.recipe_name.ToLower().Contains(queryLower))
+        {
+            matches = true;
+        }
+
+        // Поиск по ингредиентам
+        if (!matches && !string.IsNullOrEmpty(recipe.ingredients))
+        {
+            var ingredientsList = recipe.ingredients.Split(',');
+            foreach (var ing in ingredientsList)
+            {
+                var ingTrimmed = ing.Trim().ToLower();
+                if (ingTrimmed.Contains(queryLower))
+                {
+                    matches = true;
+                    break;
+                }
+            }
+        }
+
+        // Фильтр по категориям
+        if (matches && Model.SelectedCategoryIds.Count > 0)
+        {
+            bool categoryMatch = false;
+            foreach (var catId in Model.SelectedCategoryIds)
+            {
+                if (recipe.Category != null && recipe.Category.categoryID == catId)
+                {
+                    categoryMatch = true;
+                    break;
+                }
+            }
+            matches = categoryMatch;
+        }
+
+        if (matches)
+        {
+            filteredRecipes.Add(recipe);
+        }
+    }
+}
+
+
+
+<h2>Пошук рецептів</h2>
+
+<form asp-action="Search" method="get">
+    <input type="text" name="query" value="@Model.Query" placeholder="Пошук за назвою чи інгредієнтом" />
+    @foreach (var catId in Model.SelectedCategoryIds)
+    {
+        <input type="hidden" name="selectedCategories" value="@catId" />
+    }
+    <button type="submit">Пошук</button>
+</form>
+
+<hr />
+
+@if (filteredRecipes.Count == 0)
+{
+    <p>Нічого не знайдено.</p>
+}
+else
+{
+    <div class="recipe-container">
+        @foreach (var recipe in filteredRecipes)
+        {
+            <div class="recipe-card">
+                <div class="recipe-name">@recipe.recipe_name</div>
+                <div class="recipe-category">@recipe.Category?.category_name</div>
+
+                @if (!string.IsNullOrEmpty(recipe.Photo))
+                {
+                    <img src="@recipe.Photo" 
+                        alt="@recipe.recipe_name" 
+                        style="width:150px; height:100px; object-fit:cover;" />
+                }
+                else
+                {
+                    <img src="/images/default.jpg" 
+                        alt="Без зображення" 
+                        style="width:150px; height:100px; object-fit:cover;" />
+                }
+            </div>
+        }
+    </div>
+}

@@ -1,0 +1,46 @@
+@model project.Models.LogModel
+
+@{
+    Layout = "_Layout";
+    ViewData["Title"] = "Вхід";
+}
+
+@section Styles {
+    <link rel="stylesheet" href="~/css/login.css"/>
+}
+
+<div class="area">
+    <ul class="circles">
+        <li></li>
+        <li></li>
+        <li></li>
+        <li></li>
+        <li></li>
+        <li></li>
+        <li></li>
+        <li></li>
+        <li></li>
+        <li></li>
+    </ul>
+
+    <div class="context">
+        <h2>Вхід</h2>
+
+        <form asp-action="Login" asp-controller="Acc" method="post">
+            <div class="form-group">
+                <label asp-for="username"></label>
+                <input asp-for="username" class="form-control" />
+                <span asp-validation-for="username" class="text-danger"></span>
+            </div>
+
+            <div class="form-group">
+                <label asp-for="password"></label>
+                <input asp-for="password" class="form-control" type="password" />
+                <span asp-validation-for="password" class="text-danger"></span>
+            </div>
+
+            <button type="submit" class="btn btn-primary">Увійти</button>
+            <a href="/Acc/Register">Зареєструватися</a>
+        </form>
+    </div>
+</div>
