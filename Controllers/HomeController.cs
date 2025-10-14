@@ -306,44 +306,26 @@ if (string.IsNullOrEmpty(c.category_name))
 }
 
 
-    [HttpPost]
-    public IActionResult AddRecipe(AddRecipeModel model)
+   [HttpPost]
+public IActionResult AddRecipe(AddRecipeModel model)
 {
-    // Загружаем категории (на случай возврата View)
-    var categoriesFromService = _categoryService.GetCategories();
-    var filteredCategories = new List<Category>();
+    // 1️⃣ Проверяем валидацию модели
+    if (!ModelState.IsValid)
+    {
+        var allErrors = ModelState.Values
+            .SelectMany(v => v.Errors)
+            .Select(e => e.ErrorMessage)
+            .ToList();
+        ViewBag.ModelErrors = allErrors;
 
-    if (categoriesFromService != null)
-    {
-        foreach (var c in categoriesFromService)
-        {
-            if (c == null)
-                throw new Exception("Найден null-элемент в категориях!");
-            if (string.IsNullOrEmpty(c.category_name))
-                throw new Exception($"Пустое или null имя категории у ID {c.categoryID}");
-            filteredCategories.Add(c);
-        }
-    }
-    else
-    {
-        throw new Exception("Метод GetCategories() вернул null!");
+        // Загружаем категории заново для возврата в View
+        model.Categories = _categoryService.GetCategories() ?? new List<Category>();
+        return View(model);
     }
 
-    model.Categories = filteredCategories;
-
-    if (ModelState.IsValid)
+    try
     {
-        // 🔍 Логгирование полученного файла
-        if (model.Photo != null)
-        {
-            Console.WriteLine($"Файл получен: {model.Photo.FileName}, размер: {model.Photo.Length} байт");
-        }
-        else
-        {
-            Console.WriteLine("Файл не получен. model.Photo = null");
-        }
-
-        // ✅ СОЗДАНИЕ рецепта
+        // 2️⃣ Создаём объект Recipe
         var recipe = new Recipe
         {
             recipe_name = model.RecipeName,
@@ -352,34 +334,43 @@ if (string.IsNullOrEmpty(c.category_name))
             categoryID = model.CategoryID
         };
 
-    // ✅ ЕСЛИ пришло изображение — сохраняем его
-    if (model.Photo != null && model.Photo.Length > 0)
-    {
-        // Генерируем уникальное имя файла, чтобы не перезаписывать существующие
-        var fileName = Guid.NewGuid().ToString() + Path.GetExtension(model.Photo.FileName);
-
-        // Путь на сервере
-        var uploadPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "uploads", fileName);
-
-        // Сохраняем файл
-        using (var fileStream = new FileStream(uploadPath, FileMode.Create))
+        // 3️⃣ Работа с фото
+        if (model.Photo != null && model.Photo.Length > 0)
         {
-            model.Photo.CopyTo(fileStream);
+            // Проверяем, существует ли папка uploads
+            var uploadsFolder = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "uploads");
+            if (!Directory.Exists(uploadsFolder))
+                Directory.CreateDirectory(uploadsFolder);
+
+            var fileName = Guid.NewGuid().ToString() + Path.GetExtension(model.Photo.FileName);
+            var uploadPath = Path.Combine(uploadsFolder, fileName);
+
+            using (var fileStream = new FileStream(uploadPath, FileMode.Create))
+            {
+                model.Photo.CopyTo(fileStream);
+            }
+
+            recipe.Photo = "/uploads/" + fileName;
         }
 
-        // Сохраняем путь в базе
-        recipe.Photo = "/uploads/" + fileName;
-    }
-
-        // ✅ СОХРАНЯЕМ в БД
+        // 4️⃣ Сохраняем рецепт в базе
         _context.Recipes.Add(recipe);
         _context.SaveChanges();
 
-        return RedirectToAction("main_page"); // или куда ты хочешь
+        // 5️⃣ Перенаправляем на главную страницу после успешного добавления
+        return RedirectToAction("main_page");
     }
+    catch (Exception ex)
+    {
+        // 6️⃣ Логируем ошибки
+        _logger.LogError(ex, "Ошибка при добавлении рецепта");
 
-    // Если модель невалидна — вернем форму с заполненными полями
-    return View(model);
+        ViewBag.ModelErrors = new List<string> { "Произошла ошибка при сохранении рецепта. Попробуйте ещё раз." };
+        
+        // Загружаем категории заново для возврата в View
+        model.Categories = _categoryService.GetCategories() ?? new List<Category>();
+        return View(model);
+    }
 }
 
 

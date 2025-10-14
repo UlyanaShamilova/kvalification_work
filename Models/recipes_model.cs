@@ -10,7 +10,7 @@ namespace project.Models
         public int recipeID { get; set; }
         public string? recipe_name { get; set; }
         public int categoryID { get; set; }
-        public string Photo { get; set; }  
+        public string? Photo { get; set; }  
         public TimeSpan? time_cooking { get; set; }
         public string ingredients { get; set; }
         public string? instruction { get; set; }

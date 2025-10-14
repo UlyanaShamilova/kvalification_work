@@ -62,38 +62,41 @@
 </div>
 
 <div class="recipe-container">
-    @foreach (var recipe in Model.Recipes)
-    {
-        <a href="@Url.Action("Details", "Home", new { id = recipe.recipeID })" style="text-decoration:none; color:inherit;">
-            @if (!string.IsNullOrEmpty(recipe.Photo))
-            {
-                <div class="photo-class">
+@foreach (var recipe in Model.Recipes)
+{
+    <div class="recipe-card" data-category="@((recipe.Category?.category_name ?? "").ToLower())">
+        <a href="@Url.Action("Details", "Home", new { id = recipe.recipeID })" class="recipe-link" style="text-decoration:none; color:inherit; display:block;">
+            <div class="photo-class">
+                @if (!string.IsNullOrEmpty(recipe.Photo))
+                {
                     <img src="@recipe.Photo" alt="Фото рецепта" />
-                </div>
-            }
-            else
-            {
-                <img src="/images/default.jpg" alt="Без зображення" />
-            }
+                }
+                else
+                {
+                    <img src="/images/default.jpg" alt="Без зображення" />
+                }
+            </div>
 
             <div class="recipe-time">
                 <span>🕒 @recipe.time_cooking</span>
             </div>
+
             <div class="recipe-category">@recipe.Category?.category_name</div>
             <div class="recipe-name">@recipe.recipe_name</div>
         </a>
 
+        <!-- Скрытые данные для фильтрации (внутри карточки) -->
+        <div class="recipe-ingredients" style="display:none;">@recipe.ingredients</div>
 
-            <div class="recipe-ingredients" style="display:none;">
-                @recipe.ingredients
-            </div>
-
-            <button class="save-btn" data-id="@recipe.recipeID" style="background:none; border:none;">
+        <!-- Контейнер кнопок внизу карточки -->
+        <div class="card-footer">
+            <button class="save-btn" data-id="@recipe.recipeID" aria-label="Сохранить рецепт" style="background:none; border:none;">
                 <img src="@(recipe.IsSaved ? "/images/filled_star.jpg" : "/images/empty_star.jpg")" 
                      alt="Сохранить рецепт" style="width:24px; height:24px;" />
             </button>
-        @* </div> *@
-    }
+        </div>
+    </div>
+}
 </div>
 
 <div id="chatbot" onclick="toggleChat()">
