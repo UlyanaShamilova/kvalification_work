@@ -14,7 +14,49 @@
 }
 
 <div class="container">
-    <div class="right">
+    <div class="left">
+        <h2>@Model.recipe_name</h2>
+
+        @if (!string.IsNullOrEmpty(Model.Photo))
+        {
+            <img id="recipePhoto" src="@Model.Photo" alt="Фото рецепта" class="img-fluid mt-3" />
+        }
+
+        <p>Категорія:@Model.Category?.category_name</p>
+
+        @* <p><strong>Час приготування:</strong> @Model.time_cooking?.ToString(@"hh\:mm")</p> *@
+        @{
+        var time = Model.time_cooking;
+        string formattedTime = "Не вказано";
+
+        if (time.HasValue)
+        {
+            int hours = time.Value.Hours;
+            int minutes = time.Value.Minutes;
+
+            string hourWord = "годин";
+            if (hours % 10 == 1 && hours % 100 != 11) hourWord = "година";
+            else if ((hours % 10 >= 2 && hours % 10 <= 4) && !(hours % 100 >= 12 && hours % 100 <= 14)) hourWord = "години";
+
+            string minuteWord = "хвилин";
+            if (minutes % 10 == 1 && minutes % 100 != 11) minuteWord = "хвилина";
+            else if ((minutes % 10 >= 2 && minutes % 10 <= 4) && !(minutes % 100 >= 12 && minutes % 100 <= 14)) minuteWord = "хвилини";
+
+            formattedTime = $"{hours} {hourWord} {minutes} {minuteWord}";
+        }
+    }
+        <p>Час приготування:@formattedTime</p>
+
+        @if (User?.Identity?.IsAuthenticated == true)
+        {
+            <form asp-controller="Saved" asp-action="Save" method="post">
+                <input type="hidden" name="recipeId" value="@Model.recipeID" />
+                <button type="submit" id="save-btn">Зберегти рецепт</button>
+            </form>
+        }
+    </div>
+
+    <div class="center">
         <div id="ingredients">
             <h4>Інгредієнти</h4>
             <ul>
@@ -27,37 +69,49 @@
         </div>
     </div>
 
-    <div class="left">
-    <h2>@Model.recipe_name</h2>
-    <p><strong>Категорія:</strong>@Model.Category?.category_name</p>
-        @if (!string.IsNullOrEmpty(Model.Photo))
+    <div class="right">
+        <div class="similar-recipes">
+        <h3>Схожі рецепти</h3>
+        @if (ViewBag.SimilarRecipes != null && ((List<project.Models.Recipe>)ViewBag.SimilarRecipes).Count > 0)
         {
-            <img id="recipePhoto" src="@Model.Photo" alt="Фото рецепта" class="img-fluid mt-3" />
-        }
-
-        <p><strong>Час приготування:</strong> @Model.time_cooking</p>
-
-        @if (User?.Identity?.IsAuthenticated == true)
-        {
-            <form asp-controller="Saved" asp-action="Save" method="post">
-                <input type="hidden" name="recipeId" value="@Model.recipeID" />
-                <button type="submit">Сохранить рецепт</button>
-            </form>
-        }
-
-        <div id="instructions">
-            <h4>Інструкції приготування</h4>
             <ul>
-                @foreach (var ing in Model.InstructionsArr)
+                @foreach (var rec in (List<project.Models.Recipe>)ViewBag.SimilarRecipes)
                 {
-                    <li>@ing</li>
-                    <hr />
+                    <div id="recipe-card" style="margin-bottom: 15px;">
+                        <a href="@Url.Action("details", "Home", new { id = rec.recipeID })" style="display: flex; align-items: center; text-decoration: none; color: inherit;">
+                            <div class="photo-class" style="flex-shrink: 0;">
+                                @if (!string.IsNullOrEmpty(rec.Photo))
+                                {
+                                    <img src="@rec.Photo" alt="@rec.recipe_name" style="width: 60px; height: 60px; object-fit: cover; border-radius: 4px; margin-right: 10px;" />
+                                }
+                                else
+                                {
+                                    <img src="/images/default.jpg" alt="Без зображення" style="width: 60px; height: 60px; object-fit: cover; border-radius: 4px; margin-right: 10px;" />
+                                }
+                            </div>
+                            <span>@rec.recipe_name</span>
+                        </a>
+                    </div>
                 }
             </ul>
+        } else
+        {
+            <p>Схожих рецептів не знайдено.</p>
+        }
         </div>
     </div>
 </div>
 
+<div id="instructions">
+    <h4>Інструкції приготування</h4>
+    <ol>
+        @foreach (var ing in Model.InstructionsArr)
+        {
+            <li>@ing</li>
+            <hr />
+        }
+    </ol>
+</div>
 
 <h3>Коментарі</h3>
 <div id="comments">
@@ -80,11 +134,13 @@
     </form> *@
     <form id="commentForm">
     <input type="hidden" id="recipeId" name="recipeID" value="@Model.recipeID" />
-    <textarea id="comment_text" name="text" required></textarea>
-    <button type="submit">Додати</button>
+    <textarea id="comment_text" name="text" placeholder="Напишіть ваш коментар" required></textarea>
+    <button type="submit" class="btn-comment">Додати</button>
 </form>
 }
 else
 {
+    <div class="login-reminder">
     <p><a href="/Acc/Login">Увійдіть</a> щоб залишити коментар</p>
+    </div>
 }

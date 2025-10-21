@@ -7,6 +7,9 @@
 <h1>Додати рецепт</h1>
 
 <form asp-action="AddRecipe" method="post" enctype="multipart/form-data">
+
+    <div asp-validation-summary="ModelOnly" class="validation-summary"></div>
+
     <div class="left">
         <div>
             <label>Назва:</label>
@@ -45,3 +48,61 @@
         </div>
     </div>
 </form>
+
+
+
+@* @model AddRecipeModel
+
+@section Styles {
+    <link rel="stylesheet" href="~/css/addRecipe.css"/>
+}
+
+<h1>Додати рецепт</h1>
+
+<form asp-action="AddRecipe" method="post" enctype="multipart/form-data">
+    <!-- Общие ошибки -->
+    <div asp-validation-summary="ModelOnly" class="validation-summary"></div>
+
+    <div class="left">
+        <div class="form-group">
+            <label>Назва:</label>
+            <input id="name_input" asp-for="RecipeName" class="input-field" />
+            <span asp-validation-for="RecipeName" class="text-danger"></span>
+        </div>
+
+        <div class="form-group">
+            <label>Категорія:</label>
+            <select asp-for="CategoryID"
+                    asp-items="@(new SelectList(Model.Categories, "categoryID", "category_name"))"
+                    class="input-field">
+                <option value="">-- Оберіть категорію --</option>
+            </select>
+            <span asp-validation-for="CategoryID" class="text-danger"></span>
+        </div>
+
+        <div class="form-group">
+            <label>Фото:</label>
+            <input type="file" asp-for="Photo" class="input-field" />
+        </div>
+
+        <button type="submit" class="btn-submit">Додати</button>
+    </div>
+
+    <div class="right">
+        <div class="form-group">
+            <label>Інгредієнти:</label>
+            <textarea asp-for="Ingredients" class="input-field"></textarea>
+            <span asp-validation-for="Ingredients" class="text-danger"></span>
+        </div>
+
+        <div class="form-group">
+            <label>Інструкція:</label>
+            <textarea asp-for="Instruction" class="input-field"></textarea>
+            <span asp-validation-for="Instruction" class="text-danger"></span>
+        </div>
+    </div>
+</form>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+} *@

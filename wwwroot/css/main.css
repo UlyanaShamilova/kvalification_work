@@ -224,6 +224,7 @@ body {
     width: 400px;
     height: 35px;
     border-radius: 20px;
+    padding-left: 10px;
 }
 
 #searchBtn {
@@ -242,13 +243,11 @@ body {
     right: 20px;
     width: 60px;
     height: 60px;
-    /* background: linear-gradient(135deg, #4CAF50, #45A049); */
     border-radius: 50%;
     display: flex;
     justify-content: center;
     align-items: center;
     cursor: pointer;
-    /* box-shadow: 0 4px 12px rgba(0,0,0,0.3); */
     transition: transform 0.2s ease;
 }
 

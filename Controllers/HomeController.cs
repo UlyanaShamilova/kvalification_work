@@ -150,228 +150,196 @@ public class HomeController : Controller
         return View(recipe); // Передаёт рецепт в представление
     }
 
-    // public IActionResult details(int id)
-    // {
-    //     var recipe = _recipeService.GetRecipeById(id); // реализуй метод в сервисе
-
-    //     if (recipe == null) return NotFound();
-
-    //     return View(recipe);
-    // }
-
     public IActionResult details(int id)
     {
-            // 1. Загружаем все рецепты
-            Recipe[] allRecipes = _context.Recipes.ToArray();
-            Recipe? recipe = null;
-            for (int i = 0; i < allRecipes.Length; i++)
+        // Получаем рецепт
+        Recipe recipe = null;
+        foreach (var r in _context.Recipes)
+        {
+            if (r.recipeID == id)
             {
-                if (allRecipes[i].recipeID == id)
+                recipe = r;
+                break;
+            }
+        }
+        if (recipe == null)
+            return NotFound();
+
+        // Загружаем категорию текущего рецепта вручную
+        Category category = null;
+        foreach (var c in _context.Categories)
+        {
+            if (c.categoryID == recipe.categoryID)
+            {
+                category = c;
+                break;
+            }
+        }
+        recipe.Category = category;
+
+        // Массив ингредиентов текущего рецепта
+        string[] currentIngredients = recipe.IngredientsArr;
+
+        // Получаем все рецепты из той же категории, кроме текущего
+        var allCategoryRecipes = new List<Recipe>();
+        foreach (var r in _context.Recipes)
+        {
+            if (r.categoryID == recipe.categoryID && r.recipeID != id)
+            {
+                allCategoryRecipes.Add(r);
+            }
+        }
+
+        // Список похожих рецептов с пересечением ингредиентов
+        var similarRecipes = new List<Recipe>();
+
+        foreach (var r in allCategoryRecipes)
+        {
+            // Загружаем категорию для каждого рецепта вручную
+            Category rCategory = null;
+            foreach (var c in _context.Categories)
+            {
+                if (c.categoryID == r.categoryID)
                 {
-                    recipe = allRecipes[i];
+                    rCategory = c;
                     break;
                 }
             }
+            r.Category = rCategory;
 
-            if (recipe == null)
-                return NotFound();
+            string[] rIngredients = r.IngredientsArr;
 
-            // 2. Загружаем категорию рецепта
-            Category[] allCategories = _context.Categories.ToArray();
-            for (int i = 0; i < allCategories.Length; i++)
+            // Подсчет количества общих ингредиентов
+            int commonCount = 0;
+            foreach (var ingredient in rIngredients)
             {
-                if (allCategories[i].categoryID == recipe.categoryID)
+                for (int i = 0; i < currentIngredients.Length; i++)
                 {
-                    recipe.Category = allCategories[i];
-                    break;
+                    if (ingredient == currentIngredients[i])
+                    {
+                        commonCount++;
+                        break;
+                    }
                 }
             }
 
-            // 3. Загружаем все комментарии и всех пользователей
-            Comments[] allComments = _context.Comments.ToArray();
-            User[] allUsers = _context.Users.ToArray();
-
-            // массив для корневых комментариев
-            Comments[] recipeComments = new Comments[allComments.Length];
-            int rootCount = 0;
-
-            for (int i = 0; i < allComments.Length; i++)
+            if (commonCount > 0)
             {
-                if (allComments[i].recipeID == id && allComments[i].parentID == null)
-                {
-                    // привязываем пользователя
-                    for (int j = 0; j < allUsers.Length; j++)
-                    {
-                        if (allUsers[j].userID == allComments[i].userID)
-                        {
-                            allComments[i].User = allUsers[j];
-                            break;
-                        }
-                    }
-
-                    // находим ответы на этот комментарий
-                    Comments[] repliesTemp = new Comments[allComments.Length];
-                    int replyCount = 0;
-
-                    for (int k = 0; k < allComments.Length; k++)
-                    {
-                        // Проверяем, что parentID есть и совпадает с текущим корневым комментарием
-                        if (allComments[k].parentID.GetValueOrDefault() == allComments[i].rewiewID)
-                        {
-                            // Привязываем пользователя к комментарию, если User null
-                            allComments[k].User ??= allUsers.FirstOrDefault(u => u.userID == allComments[k].userID) ?? new User { username = "Неизвестный" };
-
-
-                            // Добавляем в массив ответов
-                            repliesTemp[replyCount++] = allComments[k];
-                        }
-                    }
-
-
-                    // обрезаем массив ответов
-                    if (replyCount > 0)
-                    {
-                        Comments[] finalReplies = new Comments[replyCount];
-                        for (int r = 0; r < replyCount; r++)
-                            finalReplies[r] = repliesTemp[r];
-                        allComments[i].Replies = finalReplies;
-                    }
-                    else
-                    {
-                        allComments[i].Replies = new Comments[0];
-                    }
-
-                    recipeComments[rootCount] = allComments[i];
-                    rootCount++;
-                }
+                similarRecipes.Add(r);
             }
+        }
 
-            // обрезаем массив корневых комментариев
-            Comments[] finalComments = new Comments[rootCount];
-for (int i = 0; i < rootCount; i++)
-{
-    finalComments[i] = recipeComments[i];
+        // Передаем в ViewBag
+        ViewBag.SimilarRecipes = similarRecipes;
 
-    if (finalComments[i].Replies == null)
-        finalComments[i].Replies = new Comments[0];
-
-    if (finalComments[i].User == null)
-        finalComments[i].User = new User { username = "Неизвестный" };
-}
-
-            ViewBag.Comments = finalComments;
-
-            return View(recipe);
-        
+        return View(recipe);
     }
-
-
 
     [HttpGet]
-public IActionResult AddRecipe()
-{
-    // Получаем категории из сервиса
-    var categoriesFromService = _categoryService.GetCategories();
-
-    // Создаем новый список и проверяем каждую категорию
-    var filteredCategories = new List<Category>();
-
-    if (categoriesFromService != null)
+    public IActionResult AddRecipe()
     {
-        foreach (var c in categoriesFromService)
+        // Получаем категории из сервиса
+        var categoriesFromService = _categoryService.GetCategories();
+
+        // Создаем новый список и проверяем каждую категорию
+        var filteredCategories = new List<Category>();
+
+        if (categoriesFromService != null)
         {
-            if (c == null)
+            foreach (var c in categoriesFromService)
             {
-                throw new Exception("Найден null-элемент в категориях!");
+                if (c == null)
+                {
+                    throw new Exception("Найден null-элемент в категориях!");
+                }
+    if (string.IsNullOrEmpty(c.category_name))
+    {
+        throw new Exception($"Пустое или null имя категории у ID {c.categoryID}");
+    }
+                filteredCategories.Add(c);
             }
-if (string.IsNullOrEmpty(c.category_name))
-{
-    throw new Exception($"Пустое или null имя категории у ID {c.categoryID}");
-}
-            filteredCategories.Add(c);
         }
-    }
-    else
-    {
-        throw new Exception("Метод GetCategories() вернул null!");
-    }
-
-    // Создаем модель с проверенным списком категорий
-    var model = new AddRecipeModel
-    {
-        Categories = filteredCategories
-    };
-
-    return View(model);
-}
-
-
-   [HttpPost]
-public IActionResult AddRecipe(AddRecipeModel model)
-{
-    // 1️⃣ Проверяем валидацию модели
-    if (!ModelState.IsValid)
-    {
-        var allErrors = ModelState.Values
-            .SelectMany(v => v.Errors)
-            .Select(e => e.ErrorMessage)
-            .ToList();
-        ViewBag.ModelErrors = allErrors;
-
-        // Загружаем категории заново для возврата в View
-        model.Categories = _categoryService.GetCategories() ?? new List<Category>();
-        return View(model);
-    }
-
-    try
-    {
-        // 2️⃣ Создаём объект Recipe
-        var recipe = new Recipe
+        else
         {
-            recipe_name = model.RecipeName,
-            ingredients = model.Ingredients,
-            instruction = model.Instruction,
-            categoryID = model.CategoryID
+            throw new Exception("Метод GetCategories() вернул null!");
+        }
+
+        // Создаем модель с проверенным списком категорий
+        var model = new AddRecipeModel
+        {
+            Categories = filteredCategories
         };
 
-        // 3️⃣ Работа с фото
-        if (model.Photo != null && model.Photo.Length > 0)
-        {
-            // Проверяем, существует ли папка uploads
-            var uploadsFolder = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "uploads");
-            if (!Directory.Exists(uploadsFolder))
-                Directory.CreateDirectory(uploadsFolder);
-
-            var fileName = Guid.NewGuid().ToString() + Path.GetExtension(model.Photo.FileName);
-            var uploadPath = Path.Combine(uploadsFolder, fileName);
-
-            using (var fileStream = new FileStream(uploadPath, FileMode.Create))
-            {
-                model.Photo.CopyTo(fileStream);
-            }
-
-            recipe.Photo = "/uploads/" + fileName;
-        }
-
-        // 4️⃣ Сохраняем рецепт в базе
-        _context.Recipes.Add(recipe);
-        _context.SaveChanges();
-
-        // 5️⃣ Перенаправляем на главную страницу после успешного добавления
-        return RedirectToAction("main_page");
-    }
-    catch (Exception ex)
-    {
-        // 6️⃣ Логируем ошибки
-        _logger.LogError(ex, "Ошибка при добавлении рецепта");
-
-        ViewBag.ModelErrors = new List<string> { "Произошла ошибка при сохранении рецепта. Попробуйте ещё раз." };
-        
-        // Загружаем категории заново для возврата в View
-        model.Categories = _categoryService.GetCategories() ?? new List<Category>();
         return View(model);
     }
-}
+
+
+    [HttpPost]
+    public IActionResult AddRecipe(AddRecipeModel model)
+    {
+        // 1️⃣ Проверяем валидацию модели
+        if (!ModelState.IsValid)
+        {
+            var allErrors = ModelState.Values
+                .SelectMany(v => v.Errors)
+                .Select(e => e.ErrorMessage)
+                .ToList();
+            ViewBag.ModelErrors = allErrors;
+
+            // Загружаем категории заново для возврата в View
+            model.Categories = _categoryService.GetCategories() ?? new List<Category>();
+            return View(model);
+        }
+
+        try
+        {
+            // 2️⃣ Создаём объект Recipe
+            var recipe = new Recipe
+            {
+                recipe_name = model.RecipeName,
+                ingredients = model.Ingredients,
+                instruction = model.Instruction,
+                categoryID = model.CategoryID
+            };
+
+            // 3️⃣ Работа с фото
+            if (model.Photo != null && model.Photo.Length > 0)
+            {
+                // Проверяем, существует ли папка uploads
+                var uploadsFolder = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "uploads");
+                if (!Directory.Exists(uploadsFolder))
+                    Directory.CreateDirectory(uploadsFolder);
+
+                var fileName = Guid.NewGuid().ToString() + Path.GetExtension(model.Photo.FileName);
+                var uploadPath = Path.Combine(uploadsFolder, fileName);
+
+                using (var fileStream = new FileStream(uploadPath, FileMode.Create))
+                {
+                    model.Photo.CopyTo(fileStream);
+                }
+
+                recipe.Photo = "/uploads/" + fileName;
+            }
+
+            // 4️⃣ Сохраняем рецепт в базе
+            _context.Recipes.Add(recipe);
+            _context.SaveChanges();
+
+            // 5️⃣ Перенаправляем на главную страницу после успешного добавления
+            return RedirectToAction("main_page");
+        }
+        catch (Exception ex)
+        {
+            // 6️⃣ Логируем ошибки
+            _logger.LogError(ex, "Ошибка при добавлении рецепта");
+
+            ViewBag.ModelErrors = new List<string> { "Произошла ошибка при сохранении рецепта. Попробуйте ещё раз." };
+            
+            // Загружаем категории заново для возврата в View
+            model.Categories = _categoryService.GetCategories() ?? new List<Category>();
+            return View(model);
+        }
+    }
 
 
 // [HttpPost]
