@@ -68,7 +68,7 @@
 // });
 
 
-$(document).on("click", ".reply-btn", function(e){
+$(document).on("click", "#btn-reply", function(e){
     e.preventDefault();
     var commentId = $(this).data("id");
     var formHtml = `
