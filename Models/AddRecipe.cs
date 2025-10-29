@@ -18,4 +18,6 @@ public class AddRecipeModel
     public IFormFile? Photo { get; set; }
 
     public List<Category> Categories { get; set; } = new List<Category>();
+
+    public string? TimeCooking { get; set; }
 }

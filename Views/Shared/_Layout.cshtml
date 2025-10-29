@@ -13,7 +13,7 @@
 </head>
 <body>
 
-    <header class="top-navbar">
+<header class="top-navbar">
     <nav>
         <ul class="menu">
         <li class="menu-item">
@@ -35,23 +35,38 @@
         <li class="menu-item">
                 <a href="/Home/saved">Мої збережені рецепти</a>
             </li>
-@*             
-            <li class="menu-item">
-                Титульна сторінка
-                <ul class="submenu">
-                    <li><a href="/Category1/Sub1">Подкатегория 1.1</a></li>
-                    <li><a href="/Category1/Sub2">Подкатегория 1.2</a></li>
-                    <li><a href="/Category1/Sub3">Подкатегория 1.3</a></li>
-                </ul>
+
+            <li class="menu-item user-menu">
+                @if (User.Identity != null && User.Identity.IsAuthenticated)
+                {
+                    <div class="user-info" id="userMenuWrapper">
+                        <button id="userMenuBtn" class="acc-btn">
+                            <img src="~/images/acc.png" alt="Account" style="width:45px; height:45px;" />
+                        </button>
+                        <span>@User.Identity.Name</span>
+
+                        <div id="userDropdown" class="dropdown-menu">
+                            <form asp-controller="Acc" asp-action="Logout" method="post">
+                                <button type="submit" class="dropdown-item">Вийти</button>
+                            </form>
+                        </div>
+                    </div>
+                }
+                else
+                {
+                    <div class="user-info" id="userMenuWrapper">
+                        <button id="userMenuBtn" class="acc-btn">
+                            <img src="~/images/acc.png" alt="Account" style="width:45px; height:45px;" />
+                        </button>
+                        <span>Гість</span>
+
+                        <div id="userDropdown" class="dropdown-menu">
+                            <a asp-controller="Acc" asp-action="Login" class="dropdown-item">Увійти</a>
+                        </div>
+                    </div>
+
+                }
             </li>
-            <li class="menu-item">
-                Головна сторінка
-                <ul class="submenu">
-                    <li><a href="/Category2/Sub1">Подкатегория 2.1</a></li>
-                    <li><a href="/Category2/Sub2">Подкатегория 2.2</a></li>
-                </ul>
-            </li> *@
-            
         </ul>
     </nav>
 </header>

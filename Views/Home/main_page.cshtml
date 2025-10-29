@@ -1,7 +1,3 @@
-@{
-    ViewData["Title"] = "Головна сторінка";
-}
-
 @model project.Models.MainPageViewModel
 @{
     ViewData["Title"] = "Головна сторінка";
@@ -17,30 +13,6 @@
 }
 
 <h2>Що бажаєте приготувати?</h2>
-
-<div class="account-wrapper">
-    @if (User.Identity != null && User.Identity.IsAuthenticated)
-    {
-        <div class="user-info" id="userMenuWrapper">
-            <button id="userMenuBtn" class="acc-btn">
-                <img src="~/images/acc.png" alt="Account" style="width:45px; height:45px;" />
-            </button>
-            <span>@User.Identity.Name</span>
-
-            <div id="userDropdown" class="dropdown-menu">
-                <form asp-controller="Acc" asp-action="Logout" method="post">
-                    <button type="submit" class="dropdown-item">Вийти</button>
-                </form>
-            </div>
-        </div>
-    }
-    else
-    {
-        <div class="login-placeholder">
-            <a asp-controller="Acc" asp-action="Login" class="login-link">Увійти</a>
-        </div>
-    }
-</div>
 
 <form id="searchForm" method="get" class="search-bar">
     <input type="text" id="searchInput" placeholder="Пошук за назвою чи інгредієнтом" />
@@ -77,22 +49,45 @@
                 }
             </div>
 
-            <div class="recipe-time">
-                <span>🕒 @recipe.time_cooking</span>
-            </div>
+            
+            @{
+            var time = recipe.time_cooking;
+            string formattedTime = "Не вказано";
+
+            if (time.HasValue)
+            {
+                int hours = time.Value.Hours;
+                int minutes = time.Value.Minutes;
+
+                if (hours > 0 && minutes > 0)
+                {
+                    // Якщо є обидва - години:хвилини
+                    formattedTime = $"{hours}:{minutes:D2} год";
+                }
+                else if (hours > 0)
+                {
+                    // Якщо тільки години (хвилини = 0)
+                    formattedTime = $"{hours} год";
+                }
+                else if (minutes > 0)
+                {
+                    // Якщо тільки хвилини
+                    formattedTime = $"{minutes} хв";
+                }
+            }
+        }
+        <span><img id="time-img" src="~/images/watch.png"> @formattedTime</span>
 
             <div class="recipe-category">@recipe.Category?.category_name</div>
-            <div class="recipe-name">@recipe.recipe_name</div>
+            <span class="recipe-name">@recipe.recipe_name</span>
         </a>
 
-        <!-- Скрытые данные для фильтрации (внутри карточки) -->
         <div class="recipe-ingredients" style="display:none;">@recipe.ingredients</div>
 
-        <!-- Контейнер кнопок внизу карточки -->
         <div class="card-footer">
-            <button class="save-btn" data-id="@recipe.recipeID" aria-label="Сохранить рецепт" style="background:none; border:none;">
+            <button class="save-btn" data-id="@recipe.recipeID" aria-label="Зберегти рецепт" style="background:none; border:none;">
                 <img src="@(recipe.IsSaved ? "/images/filled_star.jpg" : "/images/empty_star.jpg")" 
-                     alt="Сохранить рецепт" style="width:24px; height:24px;" />
+                     alt="Зберегти рецепт" style="width:24px; height:24px;" />
             </button>
         </div>
     </div>

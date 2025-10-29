@@ -1,35 +1,18 @@
 @model project.Models.Comments
+
+@section Styles {
+    <link rel="stylesheet" href="~/css/details.css"/>
+}
+
 @{
     var currentUserId = Context.Session.GetInt32("UserId");
 }
 
-@* <div class="comment" data-id="@Model.rewiewID">
-    <strong>@Model.User.username</strong>
-    <p class="comment-text">@Model.text</p>
-
-    @if (currentUserId != null && (Model.userID == currentUserId))
-    {
-        <a href="#" class="delete-btn" data-id="@Model.rewiewID">Видалити</a>
-    }
-
-    <a href="#" class="reply-btn" data-id="@Model.rewiewID">Відповісти</a>
-
-    <div class="replies">
-        @if (Model.Replies != null)
-        {
-            foreach (Comments reply in Model.Replies)
-            {
-                @Html.Partial("Comments", reply)
-            }
-        }
-    </div>
-</div> *@
-
-
 <div class="comment" id="comment-@Model.rewiewID">
-    <p>@(Model.User?.username ?? "Неизвестный"): @Model.text</p>
+    <b>@(Model.User?.username) </b>
+    <p>@Model.text</p>
 
-    <button class="reply-btn" data-id="@Model.rewiewID">Reply</button>
+    <button id="btn-reply" data-id="@Model.rewiewID">Відповісти</button>
 
     <div class="replies">
         @if (Model.Replies != null && Model.Replies.Count > 0)

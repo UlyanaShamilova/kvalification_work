@@ -1,5 +1,6 @@
 @model project.Models.Recipe
 
+
 @{
     var commentsArr = ViewBag.Comments as Comments[];
 }
@@ -13,6 +14,13 @@
     <link rel="stylesheet" href="~/css/details.css"/>
 }
 
+<div class="back-button">
+    <a href="/Home/main_page" class="back-arrow-icon">
+        <img src="~/images/back_arrow.png" alt="Назад" />
+    </a>
+</div>
+
+
 <div class="container">
     <div class="left">
         <h2>@Model.recipe_name</h2>
@@ -24,28 +32,33 @@
 
         <p>Категорія:@Model.Category?.category_name</p>
 
-        @* <p><strong>Час приготування:</strong> @Model.time_cooking?.ToString(@"hh\:mm")</p> *@
         @{
-        var time = Model.time_cooking;
-        string formattedTime = "Не вказано";
+            var time = Model.time_cooking;
+            string formattedTime = "Не вказано";
 
-        if (time.HasValue)
-        {
-            int hours = time.Value.Hours;
-            int minutes = time.Value.Minutes;
+            if (time.HasValue)
+            {
+                int hours = time.Value.Hours;
+                int minutes = time.Value.Minutes;
 
-            string hourWord = "годин";
-            if (hours % 10 == 1 && hours % 100 != 11) hourWord = "година";
-            else if ((hours % 10 >= 2 && hours % 10 <= 4) && !(hours % 100 >= 12 && hours % 100 <= 14)) hourWord = "години";
-
-            string minuteWord = "хвилин";
-            if (minutes % 10 == 1 && minutes % 100 != 11) minuteWord = "хвилина";
-            else if ((minutes % 10 >= 2 && minutes % 10 <= 4) && !(minutes % 100 >= 12 && minutes % 100 <= 14)) minuteWord = "хвилини";
-
-            formattedTime = $"{hours} {hourWord} {minutes} {minuteWord}";
+                if (hours > 0 && minutes > 0)
+                {
+                    // Якщо є обидва - години:хвилини
+                    formattedTime = $"{hours}:{minutes:D2} год";
+                }
+                else if (hours > 0)
+                {
+                    // Якщо тільки години (хвилини = 0)
+                    formattedTime = $"{hours} год";
+                }
+                else if (minutes > 0)
+                {
+                    // Якщо тільки хвилини
+                    formattedTime = $"{minutes} хв";
+                }
+            }
         }
-    }
-        <p>Час приготування:@formattedTime</p>
+        <p><img id="time-img" src="~/images/watch.png"> @formattedTime</p>
 
         @if (User?.Identity?.IsAuthenticated == true)
         {
@@ -113,25 +126,19 @@
     </ol>
 </div>
 
-<h3>Коментарі</h3>
 <div id="comments">
-    @if (commentsArr != null)
+<h3>Коментарі</h3>
+    @if (ViewBag.Comments != null)
     {
-        foreach (var c in commentsArr)
+        foreach (var comment in (List<project.Models.Comments>)ViewBag.Comments)
         {
-            @await Html.PartialAsync("~/Views/Comments/Comments.cshtml", c)
+            @await Html.PartialAsync("~/Views/Comments/Comments.cshtml", comment)
         }
     }
 </div>
 
 @if (User?.Identity?.IsAuthenticated == true)
 {
-    @* <form id="commentForm" method="post">
-        <input type="hidden" name="recipeID" value="@Model.recipeID" />
-        <input type="hidden" name="parentID" id="parentId" value="0" />
-        <textarea name="text" id="comment_text" class="form-control"></textarea>
-        <button type="submit">Надіслати</button>
-    </form> *@
     <form id="commentForm">
     <input type="hidden" id="recipeId" name="recipeID" value="@Model.recipeID" />
     <textarea id="comment_text" name="text" placeholder="Напишіть ваш коментар" required></textarea>

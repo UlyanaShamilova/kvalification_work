@@ -150,90 +150,137 @@ public class HomeController : Controller
         return View(recipe); // Передаёт рецепт в представление
     }
 
-    public IActionResult details(int id)
+    // public IActionResult details(int id)
+    // {
+    //     // Получаем рецепт
+    //     Recipe recipe = null;
+    //     foreach (var r in _context.Recipes)
+    //     {
+    //         if (r.recipeID == id)
+    //         {
+    //             recipe = r;
+    //             break;
+    //         }
+    //     }
+    //     if (recipe == null)
+    //         return NotFound();
+
+    //     // Загружаем категорию текущего рецепта вручную
+    //     Category category = null;
+    //     foreach (var c in _context.Categories)
+    //     {
+    //         if (c.categoryID == recipe.categoryID)
+    //         {
+    //             category = c;
+    //             break;
+    //         }
+    //     }
+    //     recipe.Category = category;
+
+    //     // Массив ингредиентов текущего рецепта
+    //     string[] currentIngredients = recipe.IngredientsArr;
+
+    //     // Получаем все рецепты из той же категории, кроме текущего
+    //     var allCategoryRecipes = new List<Recipe>();
+    //     foreach (var r in _context.Recipes)
+    //     {
+    //         if (r.categoryID == recipe.categoryID && r.recipeID != id)
+    //         {
+    //             allCategoryRecipes.Add(r);
+    //         }
+    //     }
+
+    //     // Список похожих рецептов с пересечением ингредиентов
+    //     var similarRecipes = new List<Recipe>();
+
+    //     foreach (var r in allCategoryRecipes)
+    //     {
+    //         // Загружаем категорию для каждого рецепта вручную
+    //         Category rCategory = null;
+    //         foreach (var c in _context.Categories)
+    //         {
+    //             if (c.categoryID == r.categoryID)
+    //             {
+    //                 rCategory = c;
+    //                 break;
+    //             }
+    //         }
+    //         r.Category = rCategory;
+
+    //         string[] rIngredients = r.IngredientsArr;
+
+    //         // Подсчет количества общих ингредиентов
+    //         int commonCount = 0;
+    //         foreach (var ingredient in rIngredients)
+    //         {
+    //             for (int i = 0; i < currentIngredients.Length; i++)
+    //             {
+    //                 if (ingredient == currentIngredients[i])
+    //                 {
+    //                     commonCount++;
+    //                     break;
+    //                 }
+    //             }
+    //         }
+
+    //         if (commonCount > 0)
+    //         {
+    //             similarRecipes.Add(r);
+    //         }
+    //     }
+
+    //     // Передаем в ViewBag
+    //     ViewBag.SimilarRecipes = similarRecipes;
+
+    //     return View(recipe);
+    // }
+
+ public IActionResult details(int id)
+{
+    // Получаем рецепт
+    Recipe recipe = _context.Recipes.FirstOrDefault(r => r.recipeID == id);
+    if (recipe == null)
+        return NotFound();
+
+    // Загружаем категорию текущего рецепта
+    recipe.Category = _context.Categories.FirstOrDefault(c => c.categoryID == recipe.categoryID);
+
+    // Массив ингредиентов текущего рецепта
+    string[] currentIngredients = recipe.IngredientsArr;
+
+    // Получаем все рецепты из той же категории, кроме текущего
+    var allCategoryRecipes = _context.Recipes
+        .Where(r => r.categoryID == recipe.categoryID && r.recipeID != id)
+        .ToList();
+
+    // Загружаем категории для этих рецептов и находим похожие по ингредиентам
+    var similarRecipes = new List<Recipe>();
+    foreach (var r in allCategoryRecipes)
     {
-        // Получаем рецепт
-        Recipe recipe = null;
-        foreach (var r in _context.Recipes)
+        r.Category = _context.Categories.FirstOrDefault(c => c.categoryID == r.categoryID);
+        string[] rIngredients = r.IngredientsArr;
+
+        int commonCount = rIngredients.Intersect(currentIngredients).Count();
+        if (commonCount > 0)
         {
-            if (r.recipeID == id)
-            {
-                recipe = r;
-                break;
-            }
+            similarRecipes.Add(r);
         }
-        if (recipe == null)
-            return NotFound();
-
-        // Загружаем категорию текущего рецепта вручную
-        Category category = null;
-        foreach (var c in _context.Categories)
-        {
-            if (c.categoryID == recipe.categoryID)
-            {
-                category = c;
-                break;
-            }
-        }
-        recipe.Category = category;
-
-        // Массив ингредиентов текущего рецепта
-        string[] currentIngredients = recipe.IngredientsArr;
-
-        // Получаем все рецепты из той же категории, кроме текущего
-        var allCategoryRecipes = new List<Recipe>();
-        foreach (var r in _context.Recipes)
-        {
-            if (r.categoryID == recipe.categoryID && r.recipeID != id)
-            {
-                allCategoryRecipes.Add(r);
-            }
-        }
-
-        // Список похожих рецептов с пересечением ингредиентов
-        var similarRecipes = new List<Recipe>();
-
-        foreach (var r in allCategoryRecipes)
-        {
-            // Загружаем категорию для каждого рецепта вручную
-            Category rCategory = null;
-            foreach (var c in _context.Categories)
-            {
-                if (c.categoryID == r.categoryID)
-                {
-                    rCategory = c;
-                    break;
-                }
-            }
-            r.Category = rCategory;
-
-            string[] rIngredients = r.IngredientsArr;
-
-            // Подсчет количества общих ингредиентов
-            int commonCount = 0;
-            foreach (var ingredient in rIngredients)
-            {
-                for (int i = 0; i < currentIngredients.Length; i++)
-                {
-                    if (ingredient == currentIngredients[i])
-                    {
-                        commonCount++;
-                        break;
-                    }
-                }
-            }
-
-            if (commonCount > 0)
-            {
-                similarRecipes.Add(r);
-            }
-        }
-
-        // Передаем в ViewBag
-        ViewBag.SimilarRecipes = similarRecipes;
-
-        return View(recipe);
     }
+    ViewBag.SimilarRecipes = similarRecipes;
+
+    // Загружаем комментарии с ответами и пользователями для текущего рецепта
+    var comments = _context.Comments
+        .Where(c => c.recipeID == id && c.parentID == null)
+        .Include(c => c.User)
+        .Include(c => c.Replies)
+            .ThenInclude(r => r.User)
+        .ToList();
+
+    ViewBag.Comments = comments;
+
+    return View(recipe);
+}
+
 
     [HttpGet]
     public IActionResult AddRecipe()
@@ -293,19 +340,20 @@ public class HomeController : Controller
 
         try
         {
-            // 2️⃣ Создаём объект Recipe
+            TimeSpan parsedTime = TimeSpan.Zero;
+            if (!string.IsNullOrEmpty(model.TimeCooking)) TimeSpan.TryParse(model.TimeCooking, out parsedTime);
+
             var recipe = new Recipe
             {
                 recipe_name = model.RecipeName,
                 ingredients = model.Ingredients,
                 instruction = model.Instruction,
-                categoryID = model.CategoryID
+                categoryID = model.CategoryID,
+                time_cooking = parsedTime
             };
 
-            // 3️⃣ Работа с фото
             if (model.Photo != null && model.Photo.Length > 0)
             {
-                // Проверяем, существует ли папка uploads
                 var uploadsFolder = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "uploads");
                 if (!Directory.Exists(uploadsFolder))
                     Directory.CreateDirectory(uploadsFolder);

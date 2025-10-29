@@ -1,24 +1,89 @@
+body {
+    background: url('/images/bg_title.jpg') no-repeat center center fixed;
+    background-size: cover;
+    /* margin: 0; */
+    /* padding: 0; */
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+.content-wrapper {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 2vh 5vw;
+}
+
+.text-center {
+    text-align: center;
+    margin-bottom: 5vh;
+}
+
+.display-4 {
+    line-height: 1.4;
+    margin: 0;
+}
+
+.info {
+    line-height: 1.8;
+    text-align: center;
+    max-width: 90%;
+}
+
+.info p {
+    margin: 1.5vh 0;
+}
+
+footer {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 10vh;
+    min-height: 80px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.footer-text {
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    text-align: center;
+    line-height: 1.4;
+}
+
+.arrow-link {
+    position: absolute;
+    right: 10vw;
+    bottom: 1vw;
+    display: flex;
+    align-items: center;
+}
+
 #arrow_img {
-    width: 200px;
+    width: 8vw;
+    height: auto;
     transition: transform 0.8s ease;
     cursor: pointer;
 }
 
-body {
-    background: url('/images/bg_title.jpg') no-repeat center center fixed;
-    background-size: cover;
+#arrow_img:hover {
+    transform: scale(1.1);
 }
 
 .flip {
     transform: rotateY(180deg);
 }
 
-/* Общий класс перехода */
 body.page-transition {
     animation: flipTop 1s forwards;
 }
 
-/* Переход сверху вниз (по умолчанию) */
 @keyframes flipTop {
     0% {
         transform: rotateX(0deg);
@@ -32,7 +97,6 @@ body.page-transition {
     }
 }
 
-/* Переход снизу вверх */
 body.page-transition.flip-bottom {
     animation: flipBottom 1s forwards;
 }
@@ -54,34 +118,28 @@ body.transitioning {
     pointer-events: none;
 }
 
-footer {
-  position: fixed;
-  bottom: 0;
-  left: 0;
-  width: 100%;
-  line-height: 60px;
-  font-size: 28px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  gap: 800px;
+/* Медіа-запити для дуже маленьких екранів */
+@media (max-width: 768px) {
+    .info {
+        font-size: 1.1rem;
+    }
+    
+    .arrow-link {
+        right: 5vw;
+    }
 }
 
-.footer-text{
-  text-align: center;
-}
-
-.text-center{
-  position: relative;
-  top: 50px;
-}
-
-.display-4{
-  line-height: 90px;
-}
-
-.info{
-  font-size: 36px;
-  line-height: 100px;
-  padding-top: 120px;
+/* Медіа-запити для дуже великих екранів */
+@media (min-width: 1920px) {
+    .display-4 {
+        font-size: 4rem;
+    }
+    
+    .info {
+        font-size: 2.2rem;
+    }
+    
+    .footer-text {
+        font-size: 2rem;
+    }
 }

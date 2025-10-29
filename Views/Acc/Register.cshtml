@@ -9,45 +9,29 @@
     <link rel="stylesheet" href="~/css/register.css"/>
 }
 
-<div class="area">
-    <ul class="circles">
-        <li></li>
-        <li></li>
-        <li></li>
-        <li></li>
-        <li></li>
-        <li></li>
-        <li></li>
-        <li></li>
-        <li></li>
-        <li></li>
-    </ul>
+<div class="context">
+    <h2>Реєстрація</h2>
 
+    <form asp-action="Register" asp-controller="Acc" method="post">
+        <div>
+            <label asp-for="username"></label>
+            <input asp-for="username"/>
+            <span asp-validation-for="username" class="text-danger"></span>
+        </div>
 
-    <div class="context">
-        <h2>Реєстрація</h2>
+        <div>
+            <label asp-for="email"></label>
+            <input asp-for="email"/>
+            <span asp-validation-for="email" class="text-danger"></span>
+        </div>
 
-        <form asp-action="Register" asp-controller="Acc" method="post">
-            <div class="form-group">
-                <label asp-for="username"></label>
-                <input asp-for="username" class="form-control" />
-                <span asp-validation-for="username" class="text-danger"></span>
-            </div>
+        <div>
+            <label asp-for="password"></label>
+            <input asp-for="password" type="password" />
+            <span asp-validation-for="password" class="text-danger"></span>
+        </div>
 
-            <div class="form-group">
-                <label asp-for="email"></label>
-                <input asp-for="email" class="form-control" />
-                <span asp-validation-for="email" class="text-danger"></span>
-            </div>
-
-            <div class="form-group">
-                <label asp-for="password"></label>
-                <input asp-for="password" class="form-control" type="password" />
-                <span asp-validation-for="password" class="text-danger"></span>
-            </div>
-
-            <button type="submit" class="btn btn-primary">Зареєструватися</button>
-            <a href="/Acc/Login">Увійти</a>
-        </form>
-    </div>
+        <button type="submit">Зареєструватися</button>
+        <a href="/Acc/Login">Увійти</a>
+    </form>
 </div>
