@@ -1,13 +1,12 @@
 @model project.Models.Recipe
 
-
 @{
     var commentsArr = ViewBag.Comments as Comments[];
 }
 
-
 @section Scripts {
     <script src="~/js/comments.js"></script>
+    <script src="~/js/details.js"></script>
 }
 
 @section Styles {
@@ -19,7 +18,6 @@
         <img src="~/images/back_arrow.png" alt="Назад" />
     </a>
 </div>
-
 
 <div class="container">
     <div class="left">
@@ -60,13 +58,7 @@
         }
         <p><img id="time-img" src="~/images/watch.png"> @formattedTime</p>
 
-        @if (User?.Identity?.IsAuthenticated == true)
-        {
-            <form asp-controller="Saved" asp-action="Save" method="post">
-                <input type="hidden" name="recipeId" value="@Model.recipeID" />
-                <button type="submit" id="save-btn">Зберегти рецепт</button>
-            </form>
-        }
+        <button data-id="@Model.recipeID" id="save-btn">Завантажити рецепт у текстовий файл</button>
     </div>
 
     <div class="center">
@@ -112,6 +104,8 @@
             <p>Схожих рецептів не знайдено.</p>
         }
         </div>
+
+        <p id="contacts"><a href="#footer">Мої контакти</a></p>
     </div>
 </div>
 
@@ -151,3 +145,24 @@ else
     <p><a href="/Acc/Login">Увійдіть</a> щоб залишити коментар</p>
     </div>
 }
+
+<footer id="footer">
+    <img src="~/images/logo.png" alt="Логотип" id="logo_img">
+    
+    <form action="/Home/Questions" method="post">
+        <input type="hidden" name="recipeId" value="@Model.recipeID" />
+        
+        <label for="question">Є питання? Можете залишити їх тут:</label> <br>
+        <input type="text" id="question" name="question" required> <br>
+
+        <label for="email">Введіть свою пошту для зворотнього зв'язку:</label> <br>
+        <input type="email" id="email" name="email" required>
+
+        <button type="submit" id="question-btn">Відправити</button>
+    </form>
+
+    <div class="contact">
+        <p>Автор сайту: Шамільова Уляна Олегівна</p>
+        <p>Переходьте в <a href="https://t.me/v_gostyah_U_gospodarochki" target="_blank"><strong>телеграм-канал</strong></a>, де ви знайдете ще більше рецептів та реальних відгуків!</p>
+    </div>
+</footer>

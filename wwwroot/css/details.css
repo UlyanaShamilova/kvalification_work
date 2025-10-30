@@ -1,6 +1,7 @@
 body {
     background: url('/images/bg_details.png') no-repeat center center fixed;
     background-size: cover;
+    padding-bottom: 210px;
 }
 
 html, body {
@@ -56,6 +57,29 @@ html, body {
     text-align: left;
     width: 350px;
     background-color: rgba(255, 255, 255, 0.7);
+}
+
+#contacts a {
+    font-family: Cambria, Cochin, Georgia, Times, 'Times New Roman', serif;
+    text-decoration: underline;
+    color:rgb(90, 82, 13);
+    font-weight: 600;
+    font-size: 20px;
+}
+
+#contacts {
+    margin-bottom: 1px;
+    text-align: center;
+    transition: background 0.3s ease, transform 0.2s ease;
+}
+
+#contacts:hover {
+    transform: scale(1.03);
+}
+
+#contacts a:hover {
+    text-decoration: none;
+    color:rgb(160, 144, 5);
 }
 
 h2 {
@@ -354,4 +378,59 @@ textarea{
 .login-reminder a:hover {
     color: rgb(160, 145, 20);
     border-bottom: 1px solid rgb(160, 145, 20);
+}
+
+#footer {
+    position: absolute;
+    width: 100%;
+    left: 0;
+    bottom: 0;
+    height: 200px;
+    background-color: rgb(218, 205, 183);
+    display: flex;
+    justify-content: left; /* горизонтально */
+    align-items: center;     /* вертикально */
+}
+
+#logo_img {
+    width: 150px;
+    margin-left: 180px;
+}
+
+form label {
+    font-family: Georgia, 'Times New Roman', serif;
+    font-size: 17px;
+    margin-left: 250px;
+}
+
+form input {
+    border-radius: 10px;
+    height: 50px;
+    width: 400px;
+    margin-left: 250px;
+}
+
+#question-btn {
+    width: 120px;
+    height: 40px;
+    border-radius: 10px;
+    background-color: #9a8e34;
+    transition: background 0.3s ease, transform 0.2s ease;
+    margin-left: 30px;
+}
+
+#question-btn:hover {
+    background-color: #d2c37a;
+    transform: scale(1.03);
+}
+
+.contact {
+    width: 500px;
+    margin-left: 200px;
+}
+
+.contact p {
+    font-family: Georgia, 'Times New Roman', serif;
+    font-size: 18px;
+    margin-top: 20px;
 }

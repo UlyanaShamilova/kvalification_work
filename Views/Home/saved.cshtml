@@ -1,40 +1,81 @@
-@model List<project.Models.Recipe>
+ @model List<project.Models.Recipe>
 
 @section Styles {
     <link rel="stylesheet" href="~/css/saved.css"/>
 }
 
-<h2>Ваші збережені рецепти</h2>
-
-@if (!Model.Any())
+@if (!User.Identity.IsAuthenticated)
 {
-    <p>У вас ще немає збереженних рецептів</p>
+    <p>Войдите в аккаунт, чтобы сохранять рецепты</p>
 }
+
 else
 {
-    <div class="recipes-list">
+    <h2>Ваші збережені рецепти</h2>
+
+    @if (!Model.Any())
+    {
+        <p>У вас ще немає збереженних рецептів</p>
+    }
+    else
+    {
+        <div class="recipe-container">
         @foreach (var recipe in Model)
         {
-            <div class="recipe-card">
-                @if (!string.IsNullOrEmpty(recipe.Photo))
-                {
-                    <img src="@recipe.Photo" 
-                         alt="@recipe.recipe_name" style="width:200px; height:150px;" />
-                }
-                else
-                {
-                    <img src="/images/default.jpg" alt="Без зображення" style="width:200px; height:150px;" />
-                }
+            <div class="recipe-card" data-category="@((recipe.Category?.category_name ?? "").ToLower())">
+                <a href="@Url.Action("Details", "Home", new { id = recipe.recipeID })"
+                class="recipe-link" style="text-decoration:none; color:inherit; display:block;">
+                
+                    <div class="photo-class">
+                        @if (!string.IsNullOrEmpty(recipe.Photo))
+                        {
+                            <img src="@recipe.Photo" alt="Фото рецепта" />
+                        }
+                        else
+                        {
+                            <img src="/images/default.jpg" alt="Без зображення" />
+                        }
+                    </div>
 
-                @* recipe с маленькой потому что обращаемся к объекту класса *@
-                <h3>@recipe.recipe_name</h3>
-                <p>@recipe.Category</p>
+                    @{
+                        var time = recipe.time_cooking;
+                        string formattedTime = "Не вказано";
 
-                <form asp-action="Remove" asp-controller="Saved" method="post">
-                    <input type="hidden" name="recipeId" value="@recipe.recipeID" />
-                    <button type="submit">Видалити</button>
-                </form>
+                        if (time.HasValue)
+                        {
+                            int hours = time.Value.Hours;
+                            int minutes = time.Value.Minutes;
+
+                            if (hours > 0 && minutes > 0)
+                            {
+                                formattedTime = $"{hours}:{minutes:D2} год";
+                            }
+                            else if (hours > 0)
+                            {
+                                formattedTime = $"{hours} год";
+                            }
+                            else if (minutes > 0)
+                            {
+                                formattedTime = $"{minutes} хв";
+                            }
+                        }
+                    }
+                    <span><img id="time-img" src="~/images/watch.png" /> @formattedTime</span>
+
+                    <div class="recipe-category">@recipe.Category?.category_name</div>
+                    <span class="recipe-name">@recipe.recipe_name</span>
+                </a>
+
+                <div class="recipe-ingredients" style="display:none;">@recipe.ingredients</div>
+
+                <div class="card-footer">
+                    <form asp-action="Remove" asp-controller="Saved" method="post">
+                        <input type="hidden" name="recipeId" value="@recipe.recipeID" />
+                        <button type="submit" id="delete-btn">Видалити</button>
+                    </form>
+                </div>
             </div>
         }
     </div>
+    }
 }

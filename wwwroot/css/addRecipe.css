@@ -245,3 +245,7 @@ select option {
     gap: 8px;
     position: relative;
 }
+
+#i_img {
+    width: 55px;
+}

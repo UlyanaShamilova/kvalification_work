@@ -24,17 +24,38 @@ body {
 
 .display-4 {
     line-height: 1.4;
-    margin: 0;
+    margin-bottom: 50px;
 }
 
 .info {
     line-height: 1.8;
     text-align: center;
     max-width: 90%;
+    font-size: 40px;
 }
 
 .info p {
     margin: 1.5vh 0;
+}
+
+.vikonavets {
+    position: fixed;
+    bottom: 10vh; /* Отступ от низа с учетом футера */
+    left: 100px;
+    font-family: Georgia, 'Times New Roman', serif;
+    color: #000000;
+    font-size: 30px;
+    z-index: 1100; /* Поверх футера */
+}
+
+.kurator {
+    position: fixed;
+    bottom: 10vh; /* Отступ от низа с учетом футера */
+    right: 250px;
+    font-family: Georgia, 'Times New Roman', serif;
+    color: #000000;
+    font-size: 30px;
+    z-index: 1100;
 }
 
 footer {
@@ -47,6 +68,7 @@ footer {
     display: flex;
     justify-content: center;
     align-items: center;
+    z-index: 1000;
 }
 
 .footer-text {
@@ -55,18 +77,20 @@ footer {
     transform: translateX(-50%);
     text-align: center;
     line-height: 1.4;
+    font-size: 30px;
+    pointer-events: none; /* Чтобы под футером не было перекрытий */
 }
 
 .arrow-link {
     position: absolute;
-    right: 10vw;
+    right: 2vw;
     bottom: 1vw;
     display: flex;
     align-items: center;
 }
 
 #arrow_img {
-    width: 8vw;
+    width: 7vw;
     height: auto;
     transition: transform 0.8s ease;
     cursor: pointer;
@@ -118,28 +142,36 @@ body.transitioning {
     pointer-events: none;
 }
 
-/* Медіа-запити для дуже маленьких екранів */
-@media (max-width: 768px) {
-    .info {
-        font-size: 1.1rem;
+/* @media (max-width: 768px) {
+    .display-4 {
+        font-size: 24px;
     }
-    
-    .arrow-link {
-        right: 5vw;
+    .info {
+        font-size: 14px;
+    }
+    .info p {
+        font-size: 16px;
+    }
+    .footer-text {
+        font-size: 16px;
+    }
+    .vikonavets, .kurator {
+        font-size: 14px;
+        bottom: 12vh;
     }
 }
 
-/* Медіа-запити для дуже великих екранів */
 @media (min-width: 1920px) {
     .display-4 {
-        font-size: 4rem;
+        font-size: 64px;
     }
-    
     .info {
-        font-size: 2.2rem;
+        font-size: 36px;
     }
-    
     .footer-text {
-        font-size: 2rem;
+        font-size: 32px;
     }
-}
+    .vikonavets, .kurator {
+        font-size: 28px;
+    }
+} */
