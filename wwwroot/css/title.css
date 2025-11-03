@@ -41,21 +41,23 @@ body {
 .vikonavets {
     position: fixed;
     bottom: 10vh; /* Отступ от низа с учетом футера */
-    left: 100px;
+    left: 200px;
     font-family: Georgia, 'Times New Roman', serif;
     color: #000000;
     font-size: 30px;
-    z-index: 1100; /* Поверх футера */
+    z-index: 1100;
+    text-align: center;
 }
 
 .kurator {
     position: fixed;
     bottom: 10vh; /* Отступ от низа с учетом футера */
-    right: 250px;
+    right: 400px;
     font-family: Georgia, 'Times New Roman', serif;
     color: #000000;
     font-size: 30px;
     z-index: 1100;
+    text-align: center;
 }
 
 footer {
@@ -78,7 +80,7 @@ footer {
     text-align: center;
     line-height: 1.4;
     font-size: 30px;
-    pointer-events: none; /* Чтобы под футером не было перекрытий */
+    pointer-events: none;
 }
 
 .arrow-link {
@@ -100,47 +102,28 @@ footer {
     transform: scale(1.1);
 }
 
-.flip {
-    transform: rotateY(180deg);
+body.cube-flip {
+    animation: cubeFlip 0.8s forwards;
+    transform-style: preserve-3d;
+    perspective: 1200px;
+    overflow-x: hidden;
 }
 
-body.page-transition {
-    animation: flipTop 1s forwards;
-}
-
-@keyframes flipTop {
+@keyframes cubeFlip {
     0% {
-        transform: rotateX(0deg);
-        transform-origin: top center;
+        transform: rotateY(0deg);
         opacity: 1;
     }
+    70% {
+        transform: rotateY(90deg);
+        opacity: 0.5;
+    }
     100% {
-        transform: rotateX(90deg);
-        transform-origin: top center;
+        transform: rotateY(90deg);
         opacity: 0;
     }
 }
 
-body.page-transition.flip-bottom {
-    animation: flipBottom 1s forwards;
-}
-
-@keyframes flipBottom {
-    0% {
-        transform: rotateX(0deg);
-        transform-origin: bottom center;
-        opacity: 1;
-    }
-    100% {
-        transform: rotateX(-90deg);
-        transform-origin: bottom center;
-        opacity: 0;
-    }
-}
-
-body.transitioning {
-    pointer-events: none;
-}
 
 /* @media (max-width: 768px) {
     .display-4 {

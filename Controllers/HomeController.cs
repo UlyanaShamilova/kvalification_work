@@ -487,15 +487,18 @@ public class HomeController : Controller
 
     public IActionResult DownloadRecipe(int id)
     {
-        var recipe = _context.Recipes.FirstOrDefault(r => r.recipeID == id);
+        var recipe = _context.Recipes
+        .Include(r => r.Category)
+        .FirstOrDefault(r => r.recipeID == id);
+
         if (recipe == null)
             return NotFound();
 
-        string content = $"Название: {recipe.recipe_name}\n" +
-                        $"Категорія: {recipe.Category?.category_name}\n" +
-                        $"Час приготування: {recipe.time_cooking}\n" +
-                        $"Інгредієнти: {recipe.ingredients}\n" +
-                        $"Інструкція: {recipe.instruction}";
+        string content = $"Назва: {recipe.recipe_name}\n" +
+                         $"Категорія: {recipe.Category?.category_name}\n" +
+                         $"Час приготування: {recipe.time_cooking}\n" +
+                         $"Інгредієнти: {recipe.ingredients}\n" +
+                         $"Інструкція: {recipe.instruction}";
 
         byte[] contentArr = System.Text.Encoding.UTF8.GetBytes(content);
         return File(contentArr, "text/plain", $"{recipe.recipe_name}.txt");

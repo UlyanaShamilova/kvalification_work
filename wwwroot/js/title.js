@@ -1,14 +1,15 @@
 document.addEventListener("DOMContentLoaded", function () {
-    const arrow = document.getElementById("arrow_img");
-    if (arrow) {
-        arrow.addEventListener("click", function (e) {
-            e.preventDefault();
-            document.body.classList.add("page-transition");
+    const arrowLink = document.querySelector('.arrow-link');
 
-            const targetUrl = "/Home/main_page";
+    if (arrowLink) {
+        arrowLink.addEventListener('click', function (e) {
+            e.preventDefault();
+
+            document.body.classList.add('cube-flip');
+
             setTimeout(() => {
-                window.location.href = targetUrl;
-            }, 1000);
+                window.location.href = arrowLink.href;
+            }, 800); // время совпадает с анимацией
         });
     }
 });
