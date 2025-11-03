@@ -7,7 +7,7 @@ namespace project.Models
     [Table("saved_recipes")]
     public class SavedRecipe
     {
-        [Key] // ✅ Обязательно!
+        [Key]
         [Column("savedID")]
         public int savedID { get; set; }
 

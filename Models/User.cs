@@ -8,8 +8,6 @@ namespace project.Models
     [Table("user")]
     public class User
     {
-        // [Key]
-        // [Column("userID")] // указываем точное имя колонки в MySQL
         public int userID { get; set; }
 
         [Required(ErrorMessage = "Введіть ім'я")]

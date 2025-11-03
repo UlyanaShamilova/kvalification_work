@@ -6,7 +6,7 @@
 
 @if (!User.Identity.IsAuthenticated)
 {
-    <p>Войдите в аккаунт, чтобы сохранять рецепты</p>
+    <p>Увійдіть до акаунту, щоб зберігати рецепти</p>
 }
 
 else
@@ -46,18 +46,11 @@ else
                             int hours = time.Value.Hours;
                             int minutes = time.Value.Minutes;
 
-                            if (hours > 0 && minutes > 0)
-                            {
-                                formattedTime = $"{hours}:{minutes:D2} год";
-                            }
-                            else if (hours > 0)
-                            {
-                                formattedTime = $"{hours} год";
-                            }
-                            else if (minutes > 0)
-                            {
-                                formattedTime = $"{minutes} хв";
-                            }
+                            if (hours > 0 && minutes > 0) formattedTime = $"{hours}:{minutes:D2} год";
+
+                            else if (hours > 0) formattedTime = $"{hours} год";
+
+                            else if (minutes > 0) formattedTime = $"{minutes} хв";
                         }
                     }
                     <span><img id="time-img" src="~/images/watch.png" /> @formattedTime</span>

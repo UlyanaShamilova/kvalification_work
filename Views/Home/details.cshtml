@@ -39,21 +39,11 @@
                 int hours = time.Value.Hours;
                 int minutes = time.Value.Minutes;
 
-                if (hours > 0 && minutes > 0)
-                {
-                    // Якщо є обидва - години:хвилини
-                    formattedTime = $"{hours}:{minutes:D2} год";
-                }
-                else if (hours > 0)
-                {
-                    // Якщо тільки години (хвилини = 0)
-                    formattedTime = $"{hours} год";
-                }
-                else if (minutes > 0)
-                {
-                    // Якщо тільки хвилини
-                    formattedTime = $"{minutes} хв";
-                }
+                if (hours > 0 && minutes > 0) formattedTime = $"{hours}:{minutes:D2} год";
+
+                else if (hours > 0) formattedTime = $"{hours} год";
+
+                else if (minutes > 0) formattedTime = $"{minutes} хв";
             }
         }
         <p><img id="time-img" src="~/images/watch.png"> @formattedTime</p>

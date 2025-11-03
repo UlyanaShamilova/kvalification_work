@@ -3,17 +3,14 @@ document.addEventListener('DOMContentLoaded', function () {
     const dropdown = document.getElementById('userDropdown');
 
     btn.addEventListener('click', function (e) {
-        e.stopPropagation(); // чтобы клик не закрывал меню сразу
+        e.stopPropagation();
         dropdown.style.display = dropdown.style.display === 'block' ? 'none' : 'block';
     });
 
-    // Закрываем дропдаун, если клик вне него
     document.addEventListener('click', function () {
         dropdown.style.display = 'none';
     });
 });
-
-
 
 var categoryLinks = document.querySelectorAll(".category-link");
 var recipes = document.querySelectorAll(".recipe-card");
@@ -22,7 +19,6 @@ var searchBtn = document.getElementById("searchBtn");
 
 var selectedCategory = "";
 
-// Фильтр по категориям
 categoryLinks.forEach(function(link) {
     link.addEventListener("click", function() {
         selectedCategory = this.getAttribute("data-category");
@@ -30,7 +26,6 @@ categoryLinks.forEach(function(link) {
     });
 });
 
-// Фильтр по поиску при клике на кнопку
 searchBtn.addEventListener("click", function() {
     filterRecipes();
 });
@@ -39,7 +34,6 @@ searchBtn.addEventListener("click", function() {
 function normalizeWord(word) {
     word = word.toLowerCase().trim();
     
-    // Убираем распространённые окончания
     const endings = ["ів", "и", "а", "и", "я", "ів", "ів", "у", "е", "и", "ї", "і"];
     for (let ending of endings) {
         if (word.endsWith(ending)) {
@@ -52,7 +46,7 @@ function normalizeWord(word) {
 
 function filterRecipes() {
     var query = searchInput.value.toLowerCase().trim();
-    var queryRoot = normalizeWord(query); // получаем “корень” запроса
+    var queryRoot = normalizeWord(query);
 
     recipes.forEach(function(recipe) {
         var name = recipe.querySelector(".recipe-name").textContent.toLowerCase();
@@ -62,7 +56,6 @@ function filterRecipes() {
 
         var ingredientsArr = ingredientsText.split(',').map(i => normalizeWord(i));
 
-        // проверяем, есть ли в ингредиентах слово с таким корнем
         var matchesIngredients = ingredientsArr.some(ing => ing.includes(queryRoot));
 
         var matchesCategory = !selectedCategory 
@@ -79,20 +72,17 @@ function filterRecipes() {
     });
 }
 
-/* Переключатель видимости окна чата */
 function toggleChat() {
     const chat = document.getElementById("chat-window");
     chat.style.display = (chat.style.display === "flex") ? "none" : "flex";
 }
 
-/* Добавляет сообщение в область сообщений */
 function appendMessage(who, text) {
   var messages = document.getElementById("chat-messages");
   if (!messages) {
     return;
   }
 
-  // контейнер для одного сообщения
   var wrapper = document.createElement("div");
   wrapper.className = (who === "user") ? "msg user-msg" : "msg bot-msg";
 
@@ -106,11 +96,10 @@ function appendMessage(who, text) {
   wrapper.appendChild(span);
 
   messages.appendChild(wrapper);
-  // прокрутить вниз
+
   messages.scrollTop = messages.scrollHeight;
 }
 
-/* Отправляет запрос на бэкенд и обрабатывает ответ */
 function postToBackend(url, bodyObject, onSuccess, onError) {
   fetch(url, {
     method: "POST",
@@ -137,7 +126,6 @@ function postToBackend(url, bodyObject, onSuccess, onError) {
   });
 }
 
-/* Основная функция отправки сообщения */
 function sendMessage() {
   var input = document.getElementById("chat-text");
   if (!input) {
@@ -149,37 +137,26 @@ function sendMessage() {
     return;
   }
 
-  // Показываем сообщение пользователя в чате
   appendMessage("user", msg);
 
-  // Подготовим тело запроса.
-  // Здесь старый подход: разделяем по пробелам на "ингредиенты".
-  // Ты можешь поменять логику разбора на более сложную (через запятые и т.д.).
   var ingredientsArray = msg.split(/\s+/);
 
-  // Отправляем на бэкенд
   postToBackend("http://localhost:5252/api/chat/ask", { question: msg },
     function (data) {
-      // onSuccess — обработаем ответ
-      // Возможны варианты формата ответа: { answer: "..." } или массив рецептов
       if (data === null || data === undefined) {
         appendMessage("bot", "Пустой ответ от сервера.");
         return;
       }
 
-      // Если сервер вернул объект с полем answer
       if (typeof data === "object" && data.answer) {
         appendMessage("bot", String(data.answer));
         return;
       }
 
-      // Если сервер вернул массив рецептов
       if (Array.isArray(data) && data.length > 0) {
-        // Соберём короткий текст с названиями / инструкциями
         var out = "";
         for (var i = 0; i < data.length; i++) {
           var r = data[i];
-          // ожидаем, что у рецепта есть title и instructions
           var title = r.title || ("Рецепт " + (i + 1));
           var instr = r.instructions || "";
           out += title + ": " + instr;
@@ -190,8 +167,6 @@ function sendMessage() {
         appendMessage("bot", out);
         return;
       }
-
-      // Иначе просто выводим сериализованный ответ
       try {
         appendMessage("bot", JSON.stringify(data));
       } catch (e) {
@@ -199,10 +174,9 @@ function sendMessage() {
       }
     },
     function (error) {
-      appendMessage("bot", "Ошибка при запросе к серверу: " + error.message);
+      appendMessage("bot", "Помилка при запиті на сервер: " + error.message);
     }
   );
 
-// Очистим поле ввода
   input.value = "";
 }

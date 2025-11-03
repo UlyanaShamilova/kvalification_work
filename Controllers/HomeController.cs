@@ -36,15 +36,11 @@ public class HomeController : Controller
 
     public IActionResult main_page(string query)
     {
-        if (!(User.Identity?.IsAuthenticated ?? false))
-        {
-            HttpContext.Session.Clear();
-        }
+        if (!(User.Identity?.IsAuthenticated ?? false)) HttpContext.Session.Clear();
 
         var categories = _categoryService.GetCategories();
         var recipes = _context.Recipes.Include("Category").ToList();
 
-        // 🔍 Поиск
         if (!string.IsNullOrEmpty(query))
         {
             string queryLower = query.ToLower();
@@ -54,22 +50,15 @@ public class HomeController : Controller
             {
                 bool matches = false;
 
-                // По названию
-                if (!string.IsNullOrEmpty(r.recipe_name) && r.recipe_name.ToLower().Contains(queryLower))
-                    matches = true;
+                if (!string.IsNullOrEmpty(r.recipe_name) && r.recipe_name.ToLower().Contains(queryLower)) matches = true;
 
-                // По ингредиентам
-                if (!matches && !string.IsNullOrEmpty(r.ingredients) && r.ingredients.ToLower().Contains(queryLower))
-                    matches = true;
+                if (!matches && !string.IsNullOrEmpty(r.ingredients) && r.ingredients.ToLower().Contains(queryLower)) matches = true;
 
-                if (matches)
-                    filtered.Add(r);
+                if (matches) filtered.Add(r);
             }
-
             recipes = filtered;
         }
 
-        // Формируем карточки категорий (как у тебя было)
         var categoryCards = new List<CategoryWithRecipes>();
 
         foreach (var category in categories)
@@ -100,7 +89,7 @@ public class HomeController : Controller
             Recipes = recipes
         };
 
-        ViewData["Query"] = query; // чтобы заполнить поле поиска в Razor
+        ViewData["Query"] = query;
 
         return View(model);
     }
@@ -110,7 +99,6 @@ public class HomeController : Controller
         var allCategories = _categoryService.GetCategories();
         Category? selectedCategory = null;
 
-        // Найдём нужную категорию по имени
         foreach (var category in allCategories)
         {
             if (category.category_name == category_name)
@@ -120,58 +108,38 @@ public class HomeController : Controller
             }
         }
 
-        // Если такой категории нет — 404
-        if (selectedCategory == null)
-        {
-            return NotFound();
-        }
+        if (selectedCategory == null) return NotFound();
 
         var allRecipes = _recipeService.GetRecipes();
         var recipes = new List<Recipe>();
 
-        // Добавим только рецепты с нужным CategoryId
         foreach (var recipe in allRecipes)
         {
-            if (recipe.categoryID == selectedCategory.categoryID)
-            {
-                recipes.Add(recipe);
-            }
+            if (recipe.categoryID == selectedCategory.categoryID) recipes.Add(recipe);
         }
 
         ViewBag.CategoryName = category_name;
         return View(recipes);
     }
 
-
     public IActionResult RecipeCards(int id)
     {
         var recipe = _recipeService.GetRecipeById(id);
-        if (recipe == null)
-        {
-            return NotFound();
-        }
-        return View(recipe); // Передаёт рецепт в представление
+        if (recipe == null) return NotFound();
+        return View(recipe);
     }
 
     public IActionResult Details(int id)
     {
-        // Получаем рецепт
         Recipe recipe = _context.Recipes.FirstOrDefault(r => r.recipeID == id);
-        if (recipe == null)
-            return NotFound();
+        if (recipe == null) return NotFound();
 
-        // Загружаем категорию текущего рецепта
         recipe.Category = _context.Categories.FirstOrDefault(c => c.categoryID == recipe.categoryID);
 
-        // Массив ингредиентов текущего рецепта
         string[] currentIngredients = recipe.IngredientsArr;
 
-        // Получаем все рецепты из той же категории, кроме текущего
-        var allCategoryRecipes = _context.Recipes
-            .Where(r => r.categoryID == recipe.categoryID && r.recipeID != id)
-            .ToList();
+        var allCategoryRecipes = _context.Recipes.Where(r => r.categoryID == recipe.categoryID && r.recipeID != id).ToList();
 
-        // Загружаем категории для этих рецептов и находим похожие по ингредиентам
         var similarRecipes = new List<Recipe>();
         foreach (var r in allCategoryRecipes)
         {
@@ -179,79 +147,50 @@ public class HomeController : Controller
             string[] rIngredients = r.IngredientsArr;
 
             int commonCount = rIngredients.Intersect(currentIngredients).Count();
-            if (commonCount > 0)
-            {
-                similarRecipes.Add(r);
-            }
+            if (commonCount > 0) similarRecipes.Add(r);
         }
         ViewBag.SimilarRecipes = similarRecipes;
 
-        // Загружаем комментарии с ответами и пользователями для текущего рецепта
-        var comments = _context.Comments
-            .Where(c => c.recipeID == id && c.parentID == null)
-            .Include(c => c.User)
-            .Include(c => c.Replies)
-                .ThenInclude(r => r.User)
-            .ToList();
+        var comments = _context.Comments.Where(c => c.recipeID == id && c.parentID == null).Include(c => c.User).Include(c => c.Replies).ThenInclude(r => r.User).ToList();
 
         ViewBag.Comments = comments;
 
         return View(recipe);
     }
 
-
     [HttpGet]
     public IActionResult AddRecipe()
     {
-        // Получаем категории из сервиса
         var categoriesFromService = _categoryService.GetCategories();
 
-        // Создаем новый список и проверяем каждую категорию
         var filteredCategories = new List<Category>();
 
         if (categoriesFromService != null)
         {
             foreach (var c in categoriesFromService)
             {
-                if (c == null)
-                {
-                    throw new Exception("Найден null-элемент в категориях!");
-                }
-                if (string.IsNullOrEmpty(c.category_name))
-                {
-                    throw new Exception($"Пустое или null имя категории у ID {c.categoryID}");
-                }
+                if (c == null) throw new Exception("знайдено null-елемент в категоріях");
+
+                if (string.IsNullOrEmpty(c.category_name)) throw new Exception($"null категорії у ID {c.categoryID}");
+
                 filteredCategories.Add(c);
             }
         }
-        else
-        {
-            throw new Exception("Метод GetCategories() вернул null!");
-        }
+        else throw new Exception("метод повернув null");
 
-        // Создаем модель с проверенным списком категорий
-        var model = new AddRecipeModel
-        {
-            Categories = filteredCategories
-        };
+        var model = new AddRecipeModel { Categories = filteredCategories};
 
         return View(model);
     }
 
-
     [HttpPost]
     public IActionResult AddRecipe(AddRecipeModel model)
     {
-        // 1️⃣ Проверяем валидацию модели
         if (!ModelState.IsValid)
         {
-            var allErrors = ModelState.Values
-                .SelectMany(v => v.Errors)
-                .Select(e => e.ErrorMessage)
-                .ToList();
+            var allErrors = ModelState.Values.SelectMany(v => v.Errors).Select(e => e.ErrorMessage).ToList();
             ViewBag.ModelErrors = allErrors;
 
-            // Загружаем категории заново для возврата в View
             model.Categories = _categoryService.GetCategories() ?? new List<Category>();
             return View(model);
         }
@@ -273,8 +212,7 @@ public class HomeController : Controller
             if (model.Photo != null && model.Photo.Length > 0)
             {
                 var uploadsFolder = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "uploads");
-                if (!Directory.Exists(uploadsFolder))
-                    Directory.CreateDirectory(uploadsFolder);
+                if (!Directory.Exists(uploadsFolder)) Directory.CreateDirectory(uploadsFolder);
 
                 var fileName = Guid.NewGuid().ToString() + Path.GetExtension(model.Photo.FileName);
                 var uploadPath = Path.Combine(uploadsFolder, fileName);
@@ -287,45 +225,32 @@ public class HomeController : Controller
                 recipe.Photo = "/uploads/" + fileName;
             }
 
-            // 4️⃣ Сохраняем рецепт в базе
             _context.Recipes.Add(recipe);
             _context.SaveChanges();
 
-            // 5️⃣ Перенаправляем на главную страницу после успешного добавления
             return RedirectToAction("main_page");
         }
         catch (Exception ex)
         {
-            // 6️⃣ Логируем ошибки
-            _logger.LogError(ex, "Ошибка при добавлении рецепта");
+            _logger.LogError(ex, "помилка при додаванні рецепта");
 
-            ViewBag.ModelErrors = new List<string> { "Произошла ошибка при сохранении рецепта. Попробуйте ещё раз." };
+            ViewBag.ModelErrors = new List<string> { "помилка при збереженні рецепта" };
 
-            // Загружаем категории заново для возврата в View
             model.Categories = _categoryService.GetCategories() ?? new List<Category>();
             return View(model);
         }
     }
 
-
     [HttpPost]
     public IActionResult SaveRecipe(int recipeId)
     {
         var user = User;
-        if (user?.Identity == null || !user.Identity.IsAuthenticated)
-        {
-            return Json(new { success = false, message = "Авторизуйтесь для збереження рецепту" });
-        }
+        if (user?.Identity == null || !user.Identity.IsAuthenticated) return Json(new { success = false, message = "Авторизуйтесь для збереження рецепту" });
 
-        if (!int.TryParse(user.FindFirst(ClaimTypes.NameIdentifier)?.Value, out int userId))
-        {
-            return Json(new { success = false, message = "Некорректный User ID" });
-        }
+        if (!int.TryParse(user.FindFirst(ClaimTypes.NameIdentifier)?.Value, out int userId)) return Json(new { success = false, message = "Некорректний ID" });
 
-        // Загружаем все сохранённые рецепты из БД
         var savedList = _context.SavedRecipes.ToList();
 
-        // Проверяем, есть ли уже такой рецепт
         bool exists = savedList.Any(s => s.userID == userId && s.recipeID == recipeId);
 
         if (!exists)
@@ -346,23 +271,13 @@ public class HomeController : Controller
     [HttpPost]
     public IActionResult UnsaveRecipe(int recipeId)
     {
-        if (!User.Identity?.IsAuthenticated ?? false)  // проверяем безопасно
-        {
-            return Json(new { success = false, message = "Авторизуйтесь для збереження рецепту" });
-        }
+        if (!User.Identity?.IsAuthenticated ?? false) return Json(new { success = false, message = "Авторизуйтесь для збереження рецепту" });
 
         var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier);
-        if (userIdClaim == null)
-        {
-            return Json(new { success = false, message = "User not found" });
-        }
+        if (userIdClaim == null) return Json(new { success = false, message = "Некоректний ID" });
 
-        if (!int.TryParse(userIdClaim.Value, out int userId))
-        {
-            return Json(new { success = false, message = "Invalid User ID" });
-        }
+        if (!int.TryParse(userIdClaim.Value, out int userId)) return Json(new { success = false, message = "Некоректний ID" });
 
-        // Загружаем все сохранённые рецепты из БД
         var savedList = _context.SavedRecipes.ToList();
 
         var toRemove = savedList.FirstOrDefault(s => s.userID == userId && s.recipeID == recipeId);
@@ -376,60 +291,31 @@ public class HomeController : Controller
         return Json(new { success = true });
     }
 
-
-
     public IActionResult saved()
     {
         if (User?.Identity?.IsAuthenticated != true) return RedirectToAction("Login", "Account");
 
         var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier);
-        if (userIdClaim == null || !int.TryParse(userIdClaim.Value, out int userId))
-        {
-            return Json(new { success = false, message = "Некорректный User ID" });
-        }
+        if (userIdClaim == null || !int.TryParse(userIdClaim.Value, out int userId)) return Json(new { success = false, message = "Некорректний ID" });
 
-        // int userId = int.Parse(userIdClaim.Value);
-
-
-        // Получаем все сохранённые рецепты из базы
         var allSavedRecipes = _context.SavedRecipes.ToList();
 
-        // Создаём список рецептов, которые сохранил пользователь
         var savedRecipes = new List<Recipe>();
 
         foreach (var saved in allSavedRecipes)
         {
             if (saved.userID == userId)
             {
-                if (saved.Recipe != null)
-                {
-                    savedRecipes.Add(saved.Recipe);
-                }
+                if (saved.Recipe != null) savedRecipes.Add(saved.Recipe);
                 else
                 {
-                    // Если навигационное свойство Recipe не загружено,
-                    // можно загрузить рецепт вручную из базы
                     var recipe = _context.Recipes.Find(saved.recipeID);
-                    if (recipe != null)
-                    {
-                        savedRecipes.Add(recipe);
-                    }
+                    if (recipe != null) savedRecipes.Add(recipe);
                 }
             }
         }
 
         return View(savedRecipes);
-    }
-
-    public IActionResult Privacy()
-    {
-        return View();
-    }
-
-    [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
-    public IActionResult Error()
-    {
-        return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
     }
 
     [HttpGet]
@@ -450,7 +336,7 @@ public class HomeController : Controller
 
         try
         {
-            var fromAddress = new MailAddress("ulanasamileva1@gmail.com", "Ваш сайт");
+            var fromAddress = new MailAddress("ulanasamileva1@gmail.com", "Питання");
             var toAddress = new MailAddress("ulanasamileva1@gmail.com");
             const string fromPassword = "xmsy mnzu zaxx qgwe";
             string subject = "Питання від користувача";
@@ -487,12 +373,9 @@ public class HomeController : Controller
 
     public IActionResult DownloadRecipe(int id)
     {
-        var recipe = _context.Recipes
-        .Include(r => r.Category)
-        .FirstOrDefault(r => r.recipeID == id);
+        var recipe = _context.Recipes.Include(r => r.Category).FirstOrDefault(r => r.recipeID == id);
 
-        if (recipe == null)
-            return NotFound();
+        if (recipe == null) return NotFound();
 
         string content = $"Назва: {recipe.recipe_name}\n" +
                          $"Категорія: {recipe.Category?.category_name}\n" +
@@ -502,5 +385,16 @@ public class HomeController : Controller
 
         byte[] contentArr = System.Text.Encoding.UTF8.GetBytes(content);
         return File(contentArr, "text/plain", $"{recipe.recipe_name}.txt");
+    }
+
+    public IActionResult Privacy()
+    {
+        return View();
+    }
+
+    [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
+    public IActionResult Error()
+    {
+        return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
     }
 }

@@ -12,8 +12,7 @@ namespace project.Services
 
         public RecipeService(IConfiguration configuration)
         {
-            _connectionString = configuration.GetConnectionString("DefaultConnection")
-                                ?? throw new ArgumentNullException("Connection string 'DefaultConnection' not found.");
+            _connectionString = configuration.GetConnectionString("DefaultConnection") ?? throw new ArgumentNullException("Connection string 'DefaultConnection' not found.");
         }
 
         public List<Recipe> GetRecipes()
@@ -40,18 +39,14 @@ namespace project.Services
                     {
                         category_name = reader.GetString(5)
                     },
-                    // Подгружаем только путь к фото, а не сам BLOB
                     Photo = reader.IsDBNull(3) ? "/images/default.jpg" : reader.GetString(3),
                     time_cooking = reader.IsDBNull(4) ? (TimeSpan?)null : reader.GetTimeSpan(4),
-                    // Ингредиенты и инструкции не нужны на главной
                     ingredients = null,
                     instruction = null
                 });
             }
-
             return list;
         }
-
 
         public Recipe GetRecipeById(int id)
         {
@@ -71,10 +66,7 @@ namespace project.Services
             if (reader.Read())
             {
                 TimeSpan? timeCooking = null;
-                if (!reader.IsDBNull(4))
-                {
-                    timeCooking = reader.GetTimeSpan(4);
-                }
+                if (!reader.IsDBNull(4)) timeCooking = reader.GetTimeSpan(4);
 
                 return new Recipe
                 {
@@ -89,7 +81,6 @@ namespace project.Services
                     instruction = reader.IsDBNull(6) ? null : reader.GetString(6)
                 };
             }
-
             return null;
         }
     }

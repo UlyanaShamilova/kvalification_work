@@ -9,7 +9,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
             setTimeout(() => {
                 window.location.href = arrowLink.href;
-            }, 800); // время совпадает с анимацией
+            }, 800);
         });
     }
 });

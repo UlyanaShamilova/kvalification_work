@@ -12,8 +12,7 @@ namespace project.Services
 
         public CategoryService(IConfiguration configuration)
         {
-            _connectionString = configuration.GetConnectionString("DefaultConnection")
-                                ?? throw new ArgumentNullException("Connection string 'DefaultConnection' not found.");
+            _connectionString = configuration.GetConnectionString("DefaultConnection") ?? throw new ArgumentNullException("Connection string 'DefaultConnection' not found.");
         }
 
         public List<Category> GetCategories()
@@ -36,6 +35,5 @@ namespace project.Services
             }
             return list;
         }
-
     }
 }

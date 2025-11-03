@@ -1,5 +1,3 @@
-// using System;
-// using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
@@ -8,8 +6,8 @@ namespace project.Models
     [Table("rewiews")]
     public class Comments
     {
-        [Key] // <-- говорим EF, что это первичный ключ
-        public int rewiewID { get; set; } // get - to read values, set - to write values
+        [Key]
+        public int rewiewID { get; set; }
         public string text { get; set; }
         public int userID { get; set; }
         public User User { get; set; }

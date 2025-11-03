@@ -22,7 +22,7 @@ $(document).on("submit", ".replyForm", function(e){
         type: 'POST',
         data: form.serialize(),
         success: function(result){
-            form.replaceWith(result); // заменяем форму на сам комментарий
+            form.replaceWith(result);
         },
         error: function(){
             alert("Сталася помилка при додаванні відповіді");
@@ -39,8 +39,8 @@ $(document).on("submit", "#commentForm", function(e){
         type: 'POST',
         data: form.serialize(),
         success: function(result){
-            $("#comments").append(result); // добавляем новый комментарий в конец
-            $("#comment_text").val('');    // очищаем textarea
+            $("#comments").append(result);
+            $("#comment_text").val('');
         },
         error: function(){
             alert("Сталася помилка при додаванні коментаря");
@@ -60,7 +60,7 @@ $(document).on("click", ".delete-btn", function(e){
         type: 'POST',
         data: { id: commentId },
         success: function(){
-            commentDiv.remove(); // удаляем блок с комментарием
+            commentDiv.remove();
         },
         error: function(){
             alert("Не вдалося видалити коментар");
