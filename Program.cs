@@ -44,6 +44,8 @@ builder.Services.AddScoped<project.Services.RecipeService>();
 
 builder.Services.AddScoped<project.Services.CategoryService>();
 
+builder.Services.AddHttpClient<project.Services.ChatBotService>();
+
 builder.Services.AddSession();
 
 builder.Services.AddControllers();

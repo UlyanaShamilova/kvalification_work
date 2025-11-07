@@ -100,83 +100,48 @@ function appendMessage(who, text) {
   messages.scrollTop = messages.scrollHeight;
 }
 
-function postToBackend(url, bodyObject, onSuccess, onError) {
-  fetch(url, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(bodyObject)
-  })
-  .then(function (response) {
-    if (!response.ok) {
-      throw new Error("Network response was not ok: " + response.status);
+
+
+
+
+
+
+
+async function sendMessage() {
+    const input = document.getElementById('chat-text');
+    const message = input.value.trim();
+    if (!message) return;
+
+    addMessageToChat('Ви', message);
+    input.value = '';
+
+    try {
+        const response = await fetch('/api/ai/chat', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ Message: message })
+        });
+
+        if (!response.ok) {
+            const text = await response.text();
+            console.error('HTTP error:', response.status, text);
+            addMessageToChat('Error', `Помилка сервера: ${response.status}`);
+            return;
+        }
+
+        const data = await response.json();
+        addMessageToChat('Асистент', data.reply);
+    } catch (error) {
+        console.error('Fetch error:', error);
+        addMessageToChat('Error', 'Щось пішло не так...');
     }
-    return response.json();
-  })
-  .then(function (data) {
-    if (typeof onSuccess === "function") {
-      onSuccess(data);
-    }
-  })
-  .catch(function (error) {
-    if (typeof onError === "function") {
-      onError(error);
-    } else {
-      console.error("Fetch error:", error);
-    }
-  });
 }
 
-function sendMessage() {
-  var input = document.getElementById("chat-text");
-  if (!input) {
-    return;
-  }
-  var raw = input.value || "";
-  var msg = raw.trim();
-  if (!msg) {
-    return;
-  }
-
-  appendMessage("user", msg);
-
-  var ingredientsArray = msg.split(/\s+/);
-
-  postToBackend("http://localhost:5252/api/chat/ask", { question: msg },
-    function (data) {
-      if (data === null || data === undefined) {
-        appendMessage("bot", "Пустой ответ от сервера.");
-        return;
-      }
-
-      if (typeof data === "object" && data.answer) {
-        appendMessage("bot", String(data.answer));
-        return;
-      }
-
-      if (Array.isArray(data) && data.length > 0) {
-        var out = "";
-        for (var i = 0; i < data.length; i++) {
-          var r = data[i];
-          var title = r.title || ("Рецепт " + (i + 1));
-          var instr = r.instructions || "";
-          out += title + ": " + instr;
-          if (i < data.length - 1) {
-            out += " \n---\n ";
-          }
-        }
-        appendMessage("bot", out);
-        return;
-      }
-      try {
-        appendMessage("bot", JSON.stringify(data));
-      } catch (e) {
-        appendMessage("bot", String(data));
-      }
-    },
-    function (error) {
-      appendMessage("bot", "Помилка при запиті на сервер: " + error.message);
-    }
-  );
-
-  input.value = "";
+function addMessageToChat(sender, message) {
+    const chatMessages = document.getElementById('chat-messages');
+    const messageElem = document.createElement('div');
+    messageElem.classList.add('chat-message');
+    messageElem.textContent = `${sender}: ${message}`;
+    chatMessages.appendChild(messageElem);
+    chatMessages.scrollTop = chatMessages.scrollHeight;
 }
