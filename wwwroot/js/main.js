@@ -100,13 +100,6 @@ function appendMessage(who, text) {
   messages.scrollTop = messages.scrollHeight;
 }
 
-
-
-
-
-
-
-
 async function sendMessage() {
     const input = document.getElementById('chat-text');
     const message = input.value.trim();
@@ -135,13 +128,44 @@ async function sendMessage() {
         console.error('Fetch error:', error);
         addMessageToChat('Error', 'Щось пішло не так...');
     }
+
+    const data = await response.json();
+    addMessageToChat('Асистент', del_symbols(data.reply));
+}
+
+function del_symbols(text) {
+    text = text.replace(/\s*🇺🇦\s*$/, '');
+
+    text = text.replace(/[\*#]/g, '');
+    return text;
 }
 
 function addMessageToChat(sender, message) {
     const chatMessages = document.getElementById('chat-messages');
     const messageElem = document.createElement('div');
     messageElem.classList.add('chat-message');
-    messageElem.textContent = `${sender}: ${message}`;
+
+    const bold = document.createElement('b');
+    bold.textContent = sender + ': ';
+
+    const span = document.createElement('span');
+    span.textContent = message;
+
+    messageElem.appendChild(bold);
+    messageElem.appendChild(span);
+
     chatMessages.appendChild(messageElem);
     chatMessages.scrollTop = chatMessages.scrollHeight;
 }
+
+document.addEventListener('DOMContentLoaded', function () {
+    const tooltip = document.getElementById('chatbot-tooltip');
+    setTimeout(function() {
+        tooltip.classList.add('visible');
+        setTimeout(() => tooltip.classList.remove('visible'), 7000);
+    }, 800);
+});
+
+document.getElementById('chatbot').addEventListener('mouseenter', function(){
+    document.getElementById('chatbot-tooltip').classList.remove('visible');
+});

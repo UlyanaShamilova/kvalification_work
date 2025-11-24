@@ -84,6 +84,7 @@
 }
 </div>
 
+<div id="chatbot-tooltip"><b>Якщо є питання — звертайся!</b></div>
 <div id="chatbot" onclick="toggleChat()">
     <img src="~/images/ai_main.png" alt="">
 </div>
@@ -91,11 +92,12 @@
 <div id="chat-window">
     <div class="chat-header">
         <span>Кулінарний помічник</span>
-        <button id="chat-close" onclick="toggleChat()">×</button>
+        <button onclick="toggleChat()">×</button>
     </div>
     <div id="chat-messages"></div>
     <div class="chat-input">
         <input type="text" id="chat-text" placeholder="Яке в тебе питання?" />
-        <button onclick="sendMessage()">→</button>
+        <button onclick="sendMessage()"><span class="arrow">→</span>
+        </button>
     </div>
 </div>
