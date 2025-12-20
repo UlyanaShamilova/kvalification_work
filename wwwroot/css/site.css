@@ -16,7 +16,7 @@ html {
 body {
     padding-top: 80px;
     margin: 0;
-    padding-top: 80px; /* чтобы контент не прятался под меню */
+    padding-top: 80px;
     font-family: Georgia, 'Times New Roman', Times, serif;
 }
 
@@ -28,7 +28,6 @@ body {
 .form-floating > .form-control-plaintext:focus::placeholder, .form-floating > .form-control:focus::placeholder {
   text-align: start;
 }
-
 
 .dropdown-menu {
     display: none;
@@ -72,9 +71,6 @@ body {
     background-color: #f0f0f0;
 }
 
-
-
-/* Верхняя панель */
 .top-navbar {
     position: absolute;
     top: 0;
@@ -86,7 +82,6 @@ body {
     z-index: 1000;
 }
 
-/* Меню */
 .top-navbar .menu {
     display: flex;
     justify-content: center;
@@ -97,17 +92,15 @@ body {
     list-style: none;
 }
 
-/* Пункт меню */
 .top-navbar .menu-item {
     position: relative;
     cursor: pointer;
-    padding: 0; /* убираем padding, переносим его на ссылку */
+    padding: 0;
     transition: background-color 0.3s ease;
 }
 
-/* Ссылки в меню */
 .top-navbar .menu-item a {
-    display: block; /* чтобы занимала всю область пункта */
+    display: block;
     width: 100%;
     height: 100%;
     padding: 15px 25px;
@@ -117,14 +110,12 @@ body {
     transition: background-color 0.3s ease, color 0.3s ease;
 }
 
-/* Наведение на ссылку или пункт */
 .top-navbar .menu-item a:hover,
 .top-navbar .menu-item:hover > a {
     background-color: #8a7878;
     color: white;
 }
 
-/* Адаптивность */
 @media (max-width: 768px) {
     .top-navbar .menu {
         flex-direction: column;

@@ -39,7 +39,15 @@
             <input type="file" asp-for="Photo" />
         </div>
         
-        <button type="submit" id="add-btn">Додати</button>
+        @if (User?.Identity?.IsAuthenticated ?? false)
+        {
+            <button type="submit" id="add-btn">Додати</button>
+        }
+        else
+        {
+            <p style="color:red; margin-top:10px; font-size:20px">Увійдіть для додавання власного рецепта</p>
+            <button type="button" id="add-btn" disabled>Додати</button>
+        }
     </div>
 
     <div class="right">

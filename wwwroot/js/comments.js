@@ -39,9 +39,19 @@ $(document).on("submit", "#commentForm", function(e){
         type: 'POST',
         data: form.serialize(),
         success: function(result){
-            $("#comments").append(result);
-            $("#comment_text").val('');
-        },
+    let userComment = $("#comment_text").val().toLowerCase();
+
+    $("#comments").append(result);
+    $("#comment_text").val('');
+
+    if (isPositiveComment(userComment)) {
+        $("#goodCommentAnimation").fadeIn(300);
+
+        setTimeout(() => {
+            $("#goodCommentAnimation").fadeOut(300);
+        }, 2500);
+    }
+},
         error: function(){
             alert("Сталася помилка при додаванні коментаря");
         }
@@ -67,3 +77,11 @@ $(document).on("click", ".delete-btn", function(e){
         }
     });
 });
+
+function isPositiveComment(text) {
+    const positiveWords = ["смачно", "клас", "круто", "шикарно", "супер", "топ", "найкраще", "рекомендую", "обожнюю", "сподобалось", "мені сподобалось"];
+
+    text = text.toLowerCase();
+
+    return positiveWords.some(word => text.includes(word));
+}

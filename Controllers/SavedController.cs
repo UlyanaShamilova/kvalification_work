@@ -7,7 +7,6 @@ using System.Security.Claims;
 using System.Linq;
 using System.Threading.Tasks;
 
-[Authorize]
 public class SavedController : Controller
 {
     private readonly RecipesDbContext _db;
@@ -20,7 +19,7 @@ public class SavedController : Controller
     public async Task<IActionResult> Index()
     {
         var userIdClaim = User.FindFirstValue(ClaimTypes.NameIdentifier);
-        if (string.IsNullOrEmpty(userIdClaim) || !int.TryParse(userIdClaim, out int userId)) return Unauthorized();
+        if (string.IsNullOrEmpty(userIdClaim) || !int.TryParse(userIdClaim, out int userId)) return View("~/Views/Home/saved.cshtml", new List<Recipe>());
 
         var savedRecipes = await (
             from sr in _db.SavedRecipes

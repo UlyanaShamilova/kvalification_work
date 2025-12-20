@@ -13,7 +13,7 @@ namespace project.Data
         public DbSet<SavedRecipe> SavedRecipes { get; set; }
         public DbSet<Comments> Comments { get; set; }
 
-        protected override  void OnModelCreating(ModelBuilder modelBuilder)
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
 

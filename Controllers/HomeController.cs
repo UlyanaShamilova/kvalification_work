@@ -36,10 +36,45 @@ public class HomeController : Controller
 
     public IActionResult main_page(string query)
     {
-        if (!(User.Identity?.IsAuthenticated ?? false)) HttpContext.Session.Clear();
+        if (!(User.Identity?.IsAuthenticated ?? false))
+            HttpContext.Session.Clear();
 
         var categories = _categoryService.GetCategories();
         var recipes = _context.Recipes.Include("Category").ToList();
+
+        int userId;
+        var userIdClaim = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+        if (!string.IsNullOrEmpty(userIdClaim) && int.TryParse(userIdClaim, out userId))
+        {
+            var savedRecipes = _context.SavedRecipes.ToList();
+
+            var userSaved = new List<SavedRecipe>();
+            for (int i = 0; i < savedRecipes.Count; i++)
+            {
+                if (savedRecipes[i].userID == userId)
+                {
+                    userSaved.Add(savedRecipes[i]);
+                }
+            }
+
+            for (int i = 0; i < recipes.Count; i++)
+            {
+                var recipe = recipes[i];
+
+                bool found = false;
+                for (int j = 0; j < userSaved.Count; j++)
+                {
+                    if (userSaved[j].recipeID == recipe.recipeID)
+                    {
+                        found = true;
+                        break;
+                    }
+                }
+
+                if (found) recipe.IsSaved = true;
+            }
+        }
 
         if (!string.IsNullOrEmpty(query))
         {
@@ -293,7 +328,7 @@ public class HomeController : Controller
 
     public IActionResult saved()
     {
-        if (User?.Identity?.IsAuthenticated != true) return RedirectToAction("Login", "Account");
+        if (User?.Identity?.IsAuthenticated != true) return RedirectToAction("Login", "Acc");
 
         var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier);
         if (userIdClaim == null || !int.TryParse(userIdClaim.Value, out int userId)) return Json(new { success = false, message = "Некорректний ID" });

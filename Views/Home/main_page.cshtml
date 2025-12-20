@@ -56,15 +56,32 @@
 
             if (time.HasValue)
             {
+                int days = time.Value.Days;
                 int hours = time.Value.Hours;
                 int minutes = time.Value.Minutes;
 
-                if (hours > 0 && minutes > 0) formattedTime = $"{hours}:{minutes:D2} год";
-
-                else if (hours > 0) formattedTime = $"{hours} год";
-
-                else if (minutes > 0) formattedTime = $"{minutes} хв";
+                if (days > 0)
+                {
+                    if (hours > 0 && minutes > 0)
+                        formattedTime = $"{days} д {hours} год {minutes} хв";
+                    else if (hours > 0)
+                        formattedTime = $"{days} д {hours} год";
+                    else if (minutes > 0)
+                        formattedTime = $"{days} д {minutes} хв";
+                    else
+                        formattedTime = $"{days} д";
+                }
+                else
+                {
+                    if (hours > 0 && minutes > 0)
+                        formattedTime = $"{hours}:{minutes:D2} год";
+                    else if (hours > 0)
+                        formattedTime = $"{hours} год";
+                    else if (minutes > 0)
+                        formattedTime = $"{minutes} хв";
+                }
             }
+
         }
         <span><img id="time-img" src="~/images/watch.png"> @formattedTime</span>
 
@@ -96,7 +113,7 @@
     </div>
     <div id="chat-messages"></div>
     <div class="chat-input">
-        <input type="text" id="chat-text" placeholder="Яке в тебе питання?" />
+        <input type="text" id="chat-text" placeholder="Яке у вас питання?" />
         <button onclick="sendMessage()"><span class="arrow">→</span>
         </button>
     </div>

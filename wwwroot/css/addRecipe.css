@@ -161,7 +161,6 @@ select option {
     transform: translateY(0);
 }
 
-/* Адаптивність для планшетів */
 @media (max-width: 1024px) {
     form {
         flex-direction: column;
@@ -182,7 +181,6 @@ select option {
     }
 }
 
-/* Адаптивність для мобільних */
 @media (max-width: 768px) {
     h1 {
         margin-bottom: 3vh;
@@ -215,7 +213,6 @@ select option {
     }
 }
 
-/* Дуже маленькі екрани */
 @media (max-width: 480px) {
     h1 {
         margin-bottom: 2vh;
