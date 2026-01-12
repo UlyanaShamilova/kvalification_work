@@ -32,31 +32,46 @@ $(document).on("submit", ".replyForm", function(e){
 
 $(document).on("submit", "#commentForm", function(e){
     e.preventDefault();
-    var form = $(this);
 
     $.ajax({
         url: '/Comments/Add',
         type: 'POST',
-        data: form.serialize(),
+        data: $(this).serialize(),
         success: function(result){
-    let userComment = $("#comment_text").val().toLowerCase();
 
-    $("#comments").append(result);
-    $("#comment_text").val('');
+            let userComment = $("#comment_text").val().trim().toLowerCase();
 
-    if (isPositiveComment(userComment)) {
-        $("#goodCommentAnimation").fadeIn(300);
+            let $newComment = $(result);
+            $("#comments").append($newComment);
+            $("#comment_text").val('');
 
-        setTimeout(() => {
-            $("#goodCommentAnimation").fadeOut(300);
-        }, 2500);
-    }
-},
+            if (isPositiveComment(userComment)) {
+
+                let animation = `
+                    <div class="good-comment-animation">
+                        <img src="/uploads/1f44b.gif" alt="good">
+                        <p class="good-comm">Дякуємо за гарний коментар!</p>
+                    </div>
+                `;
+
+                $newComment.append(animation);
+
+                let $anim = $newComment.find(".good-comment-animation");
+                $anim.fadeIn(300);
+
+                setTimeout(() => {
+                    $anim.fadeOut(300, function () {
+                        $(this).remove();
+                    });
+                }, 2500);
+            }
+        },
         error: function(){
             alert("Сталася помилка при додаванні коментаря");
         }
     });
 });
+
 
 $(document).on("click", ".delete-btn", function(e){
     e.preventDefault();
@@ -79,7 +94,7 @@ $(document).on("click", ".delete-btn", function(e){
 });
 
 function isPositiveComment(text) {
-    const positiveWords = ["смачно", "клас", "круто", "шикарно", "супер", "топ", "найкраще", "рекомендую", "обожнюю", "сподобалось", "мені сподобалось"];
+    const positiveWords = ["смачно", "дуже смачно", "клас", "круто", "шикарно", "супер", "топ", "найкраще", "рекомендую", "обожнюю", "сподобалось", "мені сподобалось"];
 
     text = text.toLowerCase();
 

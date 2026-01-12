@@ -112,6 +112,7 @@
 
 <div id="comments">
 <h3>Коментарі</h3>
+<p id="vvich">Не забувайте, будь ласка, про ввічливий стиль спілкування в коментарях!</p>
     @if (ViewBag.Comments != null)
     {
         foreach (var comment in (List<project.Models.Comments>)ViewBag.Comments)
@@ -121,9 +122,9 @@
     }
 </div>
 
-<div id="goodCommentAnimation" class="good-comment-animation">
+@* <div id="goodCommentAnimation" class="good-comment-animation">
     <img src="~/uploads/1f44b.gif" alt="wave">
-</div>
+</div> *@
 
 @if (User?.Identity?.IsAuthenticated == true)
 {
