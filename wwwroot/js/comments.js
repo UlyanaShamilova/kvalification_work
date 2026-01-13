@@ -94,9 +94,9 @@ $(document).on("click", ".delete-btn", function(e){
 });
 
 function isPositiveComment(text) {
-    const positiveWords = ["смачно", "дуже смачно", "клас", "круто", "шикарно", "супер", "топ", "найкраще", "рекомендую", "обожнюю", "сподобалось", "мені сподобалось"];
+    const wordsList = ["смачно", "дуже смачно", "клас", "круто", "шикарно", "супер", "топ", "найкраще", "рекомендую", "обожнюю", "сподобалось", "мені сподобалось"];
 
     text = text.toLowerCase();
 
-    return positiveWords.some(word => text.includes(word));
+    return wordsList.some(word => text.includes(word));
 }

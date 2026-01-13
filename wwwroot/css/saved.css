@@ -87,3 +87,18 @@ body {
     background-color: rgb(124, 109, 49);
     transform: scale(1.03);
 }
+
+.nothing {
+    font-size: 20px;
+}
+
+.nothing, .nthng {
+    font-size: 20px;
+    margin-top: 10px;
+    font-weight: 600;
+    color: #a7651a;
+    background-color: #a39e9e96;
+    border-radius: 10px;
+    padding: 5px;
+    width: 425px;
+}
