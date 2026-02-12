@@ -166,8 +166,18 @@ public class HomeController : Controller
 
     public IActionResult Details(int id)
     {
-        Recipe recipe = _context.Recipes.FirstOrDefault(r => r.recipeID == id);
+        Recipe recipe = _context.Recipes.Include(r => r.Author).FirstOrDefault(r => r.recipeID == id);
         if (recipe == null) return NotFound();
+
+        bool isAuthor = false;
+
+        var userIdClaim = User.FindFirstValue(ClaimTypes.NameIdentifier);
+        if (!string.IsNullOrEmpty(userIdClaim) && int.TryParse(userIdClaim, out int currentUserId))
+        {
+            isAuthor = recipe.authorUserID == currentUserId;
+        }
+
+        ViewBag.IsAuthor = isAuthor;
 
         recipe.Category = _context.Categories.FirstOrDefault(c => c.categoryID == recipe.categoryID);
 
@@ -232,6 +242,11 @@ public class HomeController : Controller
 
         try
         {
+            var userIdClaim = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (string.IsNullOrEmpty(userIdClaim)) return Unauthorized();
+
+            int userId = int.Parse(userIdClaim);
+
             TimeSpan parsedTime = TimeSpan.Zero;
             if (!string.IsNullOrEmpty(model.TimeCooking)) TimeSpan.TryParse(model.TimeCooking, out parsedTime);
 
@@ -241,7 +256,8 @@ public class HomeController : Controller
                 ingredients = model.Ingredients,
                 instruction = model.Instruction,
                 categoryID = model.CategoryID,
-                time_cooking = parsedTime
+                time_cooking = parsedTime,
+                authorUserID = userId
             };
 
             if (model.Photo != null && model.Photo.Length > 0)
@@ -420,6 +436,78 @@ public class HomeController : Controller
 
         byte[] contentArr = System.Text.Encoding.UTF8.GetBytes(content);
         return File(contentArr, "text/plain", $"{recipe.recipe_name}.txt");
+    }
+
+    [HttpGet]
+    public IActionResult Edit(int id)
+    {
+        var recipe = _context.Recipes.FirstOrDefault(r => r.recipeID == id);
+        if (recipe == null) return NotFound();
+
+        var userIdClaim = User.FindFirstValue(ClaimTypes.NameIdentifier);
+        if (string.IsNullOrEmpty(userIdClaim)) return Unauthorized();
+
+        int userId = int.Parse(userIdClaim);
+
+        if (recipe.authorUserID != userId) return Forbid();
+
+        var model = new AddRecipeModel
+        {
+            RecipeID = recipe.recipeID,
+            RecipeName = recipe.recipe_name,
+            Ingredients = recipe.ingredients,
+            Instruction = recipe.instruction,
+            CategoryID = recipe.categoryID,
+            TimeCooking = recipe.time_cooking?.ToString(@"hh\:mm"),
+            Categories = _categoryService.GetCategories()
+        };
+
+        return View("AddRecipe", model);
+    }
+
+    [HttpPost]
+    public IActionResult Edit(AddRecipeModel model)
+    {
+        if (!ModelState.IsValid)
+        {
+            model.Categories = _categoryService.GetCategories();
+            return View("AddRecipe", model);
+        }
+
+        var recipe = _context.Recipes.FirstOrDefault(r => r.recipeID == model.RecipeID);
+        if (recipe == null) return NotFound();
+
+        var userIdClaim = User.FindFirstValue(ClaimTypes.NameIdentifier);
+        if (string.IsNullOrEmpty(userIdClaim)) return Unauthorized();
+
+        int userId = int.Parse(userIdClaim);
+        if (recipe.authorUserID != userId) return Forbid();
+
+        recipe.recipe_name = model.RecipeName;
+        recipe.ingredients = model.Ingredients;
+        recipe.instruction = model.Instruction;
+        recipe.categoryID = model.CategoryID;
+
+        if (!string.IsNullOrEmpty(model.TimeCooking))
+            recipe.time_cooking = TimeSpan.Parse(model.TimeCooking);
+
+        if (model.Photo != null && model.Photo.Length > 0)
+        {
+            var uploadsFolder = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "uploads");
+            Directory.CreateDirectory(uploadsFolder);
+
+            var fileName = Guid.NewGuid() + Path.GetExtension(model.Photo.FileName);
+            var path = Path.Combine(uploadsFolder, fileName);
+
+            using var stream = new FileStream(path, FileMode.Create);
+            model.Photo.CopyTo(stream);
+
+            recipe.Photo = "/uploads/" + fileName;
+        }
+
+        _context.SaveChanges();
+
+        return RedirectToAction("Details", new { id = recipe.recipeID });
     }
 
     public IActionResult Privacy()

@@ -3,6 +3,8 @@ using project.Models;
 
 public class AddRecipeModel
 {
+    public int? RecipeID { get; set; } 
+    
     [Required(ErrorMessage = "Введіть назву рецепту")]
     public string RecipeName { get; set; }
     

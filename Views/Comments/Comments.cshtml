@@ -12,6 +12,13 @@
     <b>@(Model.User?.username) </b>
     <p>@Model.text</p>
 
+    @if (currentUserId == Model.userID)
+    {
+        <img src="~/images/edit_comm.png" alt="Редагувати" class="edit-btn" data-id="@Model.rewiewID"/>
+
+        <img src="~/images/delete_comm.png" alt="Видалити" class="delete-btn" data-id="@Model.rewiewID"/>
+    }
+    
     <button id="btn-reply" data-id="@Model.rewiewID">Відповісти</button>
 
     <div class="replies">

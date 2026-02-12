@@ -92,5 +92,22 @@ namespace project.Controllers
             var user = _context.Users.FirstOrDefault(u => u.userID == userId);
             return user != null && user.username == "Admin";
         }
+
+        [HttpPost]
+        public IActionResult Edit(int id, string text)
+        {
+            var comment = _context.Comments.Include(c => c.User).FirstOrDefault(c => c.rewiewID == id);
+            if (comment == null)
+                return NotFound();
+
+            var currentUserId = HttpContext.Session.GetInt32("UserId");
+            if (comment.userID != currentUserId) return Unauthorized();
+
+            comment.text = text;
+            _context.SaveChanges();
+
+            return PartialView("~/Views/Comments/Comments.cshtml", comment);
+        }
+
     }
 }

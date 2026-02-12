@@ -15,6 +15,11 @@ namespace project.Models
         public string ingredients { get; set; }
         public string? instruction { get; set; }
 
+        public int authorUserID { get; set; }
+        
+        [ForeignKey(nameof(authorUserID))]
+        public User Author { get; set; }
+
         [NotMapped]
         public string[] IngredientsArr
         {
@@ -75,7 +80,7 @@ namespace project.Models
         public Category? Category { get; set; }
 
         [NotMapped]
-        public bool IsSaved { get; set; } = false;
+        public bool IsSaved { get; set; }
 
         public ICollection<SavedRecipe> SavedByUsers { get; set; }
         public ICollection<Comments> Comments { get; set; }

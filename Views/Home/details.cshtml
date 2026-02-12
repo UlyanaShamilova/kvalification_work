@@ -21,7 +21,14 @@
 
 <div class="container">
     <div class="left">
-        <h2>@Model.recipe_name</h2>
+        <div class="block_edit">
+            <h2>@Model.recipe_name</h2>
+
+            @if (ViewBag.IsAuthor == true)
+            {
+                <a asp-action="Edit" asp-controller="Home" asp-route-id="@Model.recipeID" class="edit_link"><img src="~/images/edit.png" alt="Змінити рецепт" class="edit_img"/></a>
+            }
+        </div>
 
         @if (!string.IsNullOrEmpty(Model.Photo))
         {
@@ -95,7 +102,7 @@
         }
         </div>
 
-        <p id="contacts"><a href="#footer">Мої контакти</a></p>
+        <p class="contacts"><a href="#footer">Мої контакти</a></p>
     </div>
 </div>
 

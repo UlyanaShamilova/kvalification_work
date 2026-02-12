@@ -115,3 +115,29 @@ body {
     background-color: #8a7878;
     color: white;
 }
+
+.dropdown-item,
+.dropdown-item:focus,
+.dropdown-item:active {
+    background-color: transparent;
+    color: #000;
+}
+
+.dropdown-item:hover {
+    background-color: #f0f0f0 !important;
+    color: #000;
+}
+
+button.dropdown-item {
+    appearance: none;
+    -webkit-appearance: none;
+    border: none;
+    background: none;
+}
+
+.dropdown-menu .dropdown-item,
+.dropdown-menu .dropdown-item:focus,
+.dropdown-menu .dropdown-item:active,
+.dropdown-menu .dropdown-item:hover {
+    color: #000 !important;
+}

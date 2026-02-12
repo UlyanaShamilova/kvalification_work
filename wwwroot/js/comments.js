@@ -94,9 +94,59 @@ $(document).on("click", ".delete-btn", function(e){
 });
 
 function isPositiveComment(text) {
-    const wordsList = ["смачно", "дуже смачно", "клас", "круто", "шикарно", "супер", "топ", "найкраще", "рекомендую", "обожнюю", "сподобалось", "мені сподобалось"];
+    const wordsList = ["смачно", "клас", "круто", "шикарно", "супер", "топ", "найкраще", "рекомендую", "обожнюю", "сподобалось"];
 
     text = text.toLowerCase();
 
     return wordsList.some(word => text.includes(word));
 }
+
+$(document).on("click", ".edit-btn", function(e){
+    e.preventDefault();
+    var commentDiv = $(this).closest(".comment");
+    var commentText = commentDiv.find(".comment-text").text().trim();
+    var commentId = $(this).data("id");
+
+    commentDiv.find(".comment-text").hide();
+    $(this).hide();
+
+    var editForm = `
+        <form class="editForm">
+            <textarea name="text" required>${commentText}</textarea>
+            <button type="submit">Зберегти</button>
+            <button type="button" class="cancelEdit">Скасувати</button>
+        </form>
+    `;
+    commentDiv.append(editForm);
+});
+
+$(document).on("click", ".cancelEdit", function(){
+    var form = $(this).closest(".editForm");
+    var commentDiv = $(this).closest(".comment");
+
+    commentDiv.find(".comment-text").show();
+    commentDiv.find(".edit-btn").show();
+    form.remove();
+});
+
+$(document).on("submit", ".editForm", function(e){
+    e.preventDefault();
+    var form = $(this);
+    var commentDiv = form.closest(".comment");
+    var commentId = commentDiv.find(".edit-btn").data("id");
+
+    $.ajax({
+        url: '/Comments/Edit',
+        type: 'POST',
+        data: {
+            id: commentId,
+            text: form.find("textarea[name='text']").val()
+        },
+        success: function(result){
+            commentDiv.replaceWith(result);
+        },
+        error: function(){
+            alert("Не вдалося редагувати коментар");
+        }
+    });
+});

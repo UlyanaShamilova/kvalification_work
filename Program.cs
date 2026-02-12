@@ -23,7 +23,9 @@ builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationSc
     {
         options.LoginPath = "/Acc/Login";
         options.LogoutPath = "/Acc/Logout";
-        options.SlidingExpiration = false;
+
+        options.ExpireTimeSpan = TimeSpan.FromDays(7);
+        options.SlidingExpiration = true;
 
         options.Cookie.IsEssential = true;
         options.Cookie.HttpOnly = true;
@@ -33,7 +35,7 @@ builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationSc
 builder.Services.AddDistributedMemoryCache();
 builder.Services.AddSession(options =>
 {
-    options.IdleTimeout = TimeSpan.FromHours(1);
+    options.IdleTimeout = TimeSpan.FromDays(7);
     options.Cookie.HttpOnly = true;
     options.Cookie.IsEssential = true;
 });
@@ -45,8 +47,6 @@ builder.Services.AddScoped<project.Services.RecipeService>();
 builder.Services.AddScoped<project.Services.CategoryService>();
 
 builder.Services.AddHttpClient<project.Services.ChatBotService>();
-
-builder.Services.AddSession();
 
 builder.Services.AddControllers();
 

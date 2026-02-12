@@ -1,17 +1,3 @@
-document.addEventListener('DOMContentLoaded', function () {
-    const btn = document.getElementById('userMenuBtn');
-    const dropdown = document.getElementById('userDropdown');
-
-    btn.addEventListener('click', function (e) {
-        e.stopPropagation();
-        dropdown.style.display = dropdown.style.display === 'block' ? 'none' : 'block';
-    });
-
-    document.addEventListener('click', function () {
-        dropdown.style.display = 'none';
-    });
-});
-
 var categoryLinks = document.querySelectorAll(".category-link");
 var recipes = document.querySelectorAll(".recipe-card");
 var searchInput = document.getElementById("searchInput");

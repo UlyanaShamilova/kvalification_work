@@ -12,6 +12,16 @@
 <div class="context">
     <h2>Вхід</h2>
 
+    @if (!ViewData.ModelState.IsValid)
+    {
+        <div class="alert alert-danger">
+            @foreach (var error in ViewData.ModelState.Values.SelectMany(v => v.Errors))
+            {
+                <div>@error.ErrorMessage</div>
+            }
+        </div>
+    }
+
     <form asp-action="Login" asp-controller="Acc" method="post">
         <div>
             <label asp-for="username"></label>

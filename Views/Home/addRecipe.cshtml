@@ -1,17 +1,22 @@
 @model AddRecipeModel
 
+@{
+    bool isEdit = Model.RecipeID > 0;
+}
+
 @section Styles {
     <link rel="stylesheet" href="~/css/addRecipe.css"/>
 }
 
 <h1>Додати рецепт</h1>
 
-<form asp-action="AddRecipe" method="post" enctype="multipart/form-data">
+<form asp-action="@(isEdit ? "Edit" : "AddRecipe")" asp-controller="Home" method="post" enctype="multipart/form-data">
 
     <div asp-validation-summary="ModelOnly" class="validation-summary"></div>
 
     <div class="left">
         <div>
+            <input type="hidden" asp-for="RecipeID" />
             <label>Назва:</label>
             <input id="name_input" asp-for="RecipeName" />
         </div>
@@ -45,7 +50,7 @@
         }
         else
         {
-            <p style="color:red; margin-top:10px; font-size:20px">Увійдіть для додавання власного рецепта</p>
+            <p class="login"><a href="/Acc/Login" id="login_link">Увійдіть</a> для додавання власного рецепта</p>
             <button type="button" id="add-btn" disabled>Додати</button>
         }
     </div>

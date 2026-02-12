@@ -59,27 +59,56 @@ html, body {
     background-color: rgba(255, 255, 255, 0.7);
 }
 
-#contacts a {
+.contacts a {
     font-family: Cambria, Cochin, Georgia, Times, 'Times New Roman', serif;
     text-decoration: underline;
     color:rgb(90, 82, 13);
     font-weight: 600;
-    font-size: 20px;
+    font-size: 22px;
 }
 
-#contacts {
+.contacts {
     margin-bottom: 1px;
     text-align: center;
     transition: background 0.3s ease, transform 0.2s ease;
 }
 
-#contacts:hover {
+.contacts:hover {
     transform: scale(1.03);
 }
 
-#contacts a:hover {
+.contacts a:hover {
     text-decoration: none;
     color:rgb(160, 144, 5);
+}
+
+.block_edit {
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    justify-content: center;
+}
+
+.edit_link {
+    position: absolute;
+    right: -5px;
+}
+
+.edit_img {
+    width: 70px;
+    height: 70px;
+    cursor: pointer;
+    transition: transform 0.2s ease;
+}
+
+.edit_img:hover {
+    transform: scale(1.15);
+}
+
+.block_edit h2 {
+    margin: 15px;
+    text-align: center;
 }
 
 h2 {

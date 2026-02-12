@@ -22,5 +22,7 @@ namespace project.Models
 
         public ICollection<SavedRecipe> SavedRecipes { get; set; }
 
+        public ICollection<Recipe> Recipes { get; set; }
+
     }
 }

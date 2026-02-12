@@ -116,8 +116,8 @@ public class AccController : Controller
         principal,
         new AuthenticationProperties
         {
-            IsPersistent = false,
-            ExpiresUtc = DateTimeOffset.UtcNow.AddMinutes(30)
+            IsPersistent = true,
+            ExpiresUtc = DateTimeOffset.UtcNow.AddDays(7)
         });
     }
 }

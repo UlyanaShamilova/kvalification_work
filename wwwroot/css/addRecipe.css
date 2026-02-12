@@ -246,3 +246,15 @@ select option {
 #i_img {
     width: 55px;
 }
+
+.login {
+    color:red;
+    margin-top:10px;
+    font-size:20px;
+}
+
+#login_link {
+    color:red;
+    margin-top:10px;
+    font-size:20px;
+}
